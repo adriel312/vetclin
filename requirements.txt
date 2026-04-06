@@ -1,0 +1,34 @@
+# ─── Framework principal ───────────────────────────────────────────────────────
+Django==5.0.6
+
+# ─── Banco de dados ────────────────────────────────────────────────────────────
+# psycopg2-binary não tem wheel para Python 3.13 no Windows.
+# Use psycopg[binary] (psycopg3), que é o driver moderno e tem suporte completo.
+psycopg[binary]==3.2.4
+
+# ─── Admin moderno ─────────────────────────────────────────────────────────────
+django-unfold==1.0.0
+
+# ─── Imagens / storage ─────────────────────────────────────────────────────────
+cloudinary==1.40.0
+django-cloudinary-storage==0.3.0
+
+# ─── Formulários ──────────────────────────────────────────────────────────────
+django-crispy-forms==2.3
+crispy-tailwind==1.0.3
+
+# ─── Variáveis de ambiente ─────────────────────────────────────────────────────
+python-decouple==3.8
+
+# ─── SEO ───────────────────────────────────────────────────────────────────────
+
+# ─── Utilitários ───────────────────────────────────────────────────────────────
+Pillow==10.4.0
+django-extensions==3.2.3
+whitenoise==6.7.0
+
+# ─── Dev / debug ───────────────────────────────────────────────────────────────
+django-debug-toolbar==4.4.2
+
+# ─── Produção ──────────────────────────────────────────────────────────────────
+gunicorn==22.0.0

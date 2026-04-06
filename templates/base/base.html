@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}{{ clinica.nome|default:"Clínica Veterinária" }}{% endblock %}</title>
+
+  <!-- Tailwind CSS (CDN para desenvolvimento — use build em produção) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary:   { DEFAULT: '#015EA1', light: '#4A9ED0', dark: '#014880' },
+            secondary: { DEFAULT: '#E07B0A', light: '#F5A23A', dark: '#B36008' },
+          },
+          fontFamily: {
+            sans:    ['"Plus Jakarta Sans"', 'sans-serif'],
+            display: ['"Fraunces"', 'serif'],
+          },
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+
+  <!-- HTMX -->
+  <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+
+  <!-- Alpine.js -->
+  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+  {% block extra_head %}{% endblock %}
+</head>
+<body class="font-sans bg-white text-gray-800 antialiased">
+
+  <!-- Navbar -->
+  {% include "components/navbar.html" %}
+
+  <!-- Conteúdo principal -->
+  <main>
+    {% if messages %}
+      {% for message in messages %}
+        <div class="fixed top-20 right-4 z-50 px-6 py-3 rounded-xl shadow-lg
+          {% if message.tags == 'success' %}bg-primary text-white{% else %}bg-red-500 text-white{% endif %}"
+          x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 4000)"
+          x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Footer -->
+  {% include "components/footer.html" %}
+
+  <!-- Botão flutuante WhatsApp -->
+  {% include "components/whatsapp_btn.html" %}
+
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

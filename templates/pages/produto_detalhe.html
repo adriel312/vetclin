@@ -1,0 +1,109 @@
+{% extends "base/base.html" %}
+{% block title %}{{ produto.nome }} — {{ clinica.nome }}{% endblock %}
+
+{% block content %}
+
+<!-- Breadcrumb -->
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+  <nav class="flex items-center gap-2 text-sm text-gray-400">
+    <a href="{% url 'core:home' %}" class="hover:text-primary transition-colors">Início</a>
+    <span class="material-icons-round text-base">chevron_right</span>
+    <a href="{% url 'produtos:lista' %}" class="hover:text-primary transition-colors">Loja</a>
+    <span class="material-icons-round text-base">chevron_right</span>
+    {% if produto.categoria %}
+    <a href="{% url 'produtos:lista' %}?categoria={{ produto.categoria.slug }}" class="hover:text-primary transition-colors">{{ produto.categoria.nome }}</a>
+    <span class="material-icons-round text-base">chevron_right</span>
+    {% endif %}
+    <span class="text-gray-600">{{ produto.nome }}</span>
+  </nav>
+</div>
+
+<article class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+
+    <!-- Imagem -->
+    <div class="rounded-3xl overflow-hidden bg-gray-50 aspect-square">
+      {% if produto.imagem %}
+        <img src="{{ produto.imagem.url }}" alt="{{ produto.nome }}" class="w-full h-full object-cover">
+      {% else %}
+        <div class="w-full h-full flex items-center justify-center">
+          <span class="material-icons-round text-gray-200" style="font-size:8rem">image</span>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Informações -->
+    <div class="space-y-6">
+      {% if produto.categoria %}
+      <p class="text-secondary font-semibold text-sm uppercase tracking-widest">{{ produto.categoria.nome }}</p>
+      {% endif %}
+
+      <h1 class="font-display text-4xl font-semibold text-gray-800 leading-tight">{{ produto.nome }}</h1>
+
+      {% if produto.marca %}
+      <p class="text-gray-400 text-sm">Marca: <span class="text-gray-600 font-medium">{{ produto.marca }}</span></p>
+      {% endif %}
+
+      {% if produto.preco %}
+      <div class="py-4 border-t border-b border-gray-100">
+        <p class="text-sm text-gray-400 mb-1">Preço</p>
+        <p class="font-display text-4xl font-semibold text-primary">R$ {{ produto.preco }}</p>
+      </div>
+      {% endif %}
+
+      {% if produto.descricao %}
+      <div class="text-gray-600 text-sm leading-relaxed">
+        {{ produto.descricao|linebreaks }}
+      </div>
+      {% endif %}
+
+      <!-- Ações -->
+      <div class="space-y-3 pt-2">
+        <a href="https://wa.me/{{ clinica.whatsapp }}?text=Olá! Tenho interesse no produto: {{ produto.nome }}"
+           target="_blank"
+           class="w-full flex items-center justify-center gap-2 bg-[#25D366] text-white py-3.5 rounded-2xl font-semibold hover:bg-green-600 transition-colors shadow-md">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 32 32" fill="white">
+            <path d="M16 2C8.268 2 2 8.268 2 16c0 2.477.651 4.8 1.787 6.814L2 30l7.388-1.762A13.93 13.93 0 0 0 16 30c7.732 0 14-6.268 14-14S23.732 2 16 2zm6.36 19.32c-.348-.174-2.06-1.016-2.38-1.132-.32-.116-.553-.174-.785.174-.232.348-.9 1.132-1.104 1.365-.204.232-.406.26-.754.086-.348-.174-1.47-.542-2.8-1.727-1.034-.922-1.732-2.062-1.936-2.41-.204-.348-.022-.536.153-.71.158-.156.348-.406.522-.61.174-.204.232-.348.348-.58.116-.232.058-.435-.029-.61-.087-.174-.785-1.893-1.075-2.593-.283-.68-.57-.588-.785-.599l-.668-.012c-.232 0-.61.087-.928.435-.319.348-1.218 1.19-1.218 2.903s1.247 3.368 1.421 3.6c.174.232 2.454 3.748 5.947 5.254.831.358 1.48.572 1.985.732.834.265 1.594.228 2.194.138.669-.1 2.06-.842 2.35-1.656.29-.814.29-1.511.204-1.656-.087-.145-.319-.232-.668-.406z"/>
+          </svg>
+          Consultar via WhatsApp
+        </a>
+        <a href="{% url 'contato:contato' %}"
+           class="w-full flex items-center justify-center gap-2 border border-gray-200 text-gray-600 py-3.5 rounded-2xl font-semibold hover:border-primary hover:text-primary transition-colors">
+          <span class="material-icons-round">mail</span>
+          Enviar mensagem
+        </a>
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- Produtos relacionados -->
+{% if relacionados %}
+<section class="bg-gray-50 py-16">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <h2 class="font-display text-2xl font-semibold text-gray-800 mb-8">Produtos relacionados</h2>
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
+      {% for rel in relacionados %}
+      <a href="{% url 'produtos:detalhe' rel.slug %}"
+         class="group bg-white rounded-2xl overflow-hidden border border-gray-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-200">
+        <div class="aspect-square overflow-hidden bg-gray-50">
+          {% if rel.imagem %}
+            <img src="{{ rel.imagem.url }}" alt="{{ rel.nome }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+          {% else %}
+            <div class="w-full h-full flex items-center justify-center">
+              <span class="material-icons-round text-gray-200 text-4xl">image</span>
+            </div>
+          {% endif %}
+        </div>
+        <div class="p-4">
+          <p class="font-medium text-gray-800 text-sm group-hover:text-primary transition-colors">{{ rel.nome }}</p>
+          {% if rel.preco %}<p class="text-primary font-semibold text-sm mt-1">R$ {{ rel.preco }}</p>{% endif %}
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% endblock %}

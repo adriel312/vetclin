@@ -1,0 +1,42 @@
+<footer class="bg-primary-dark text-white mt-20">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 grid grid-cols-1 md:grid-cols-3 gap-10">
+
+    <!-- Coluna 1: Identidade -->
+    <div>
+      <p class="font-display text-2xl font-semibold mb-2">{{ clinica.nome }}</p>
+      <p class="text-green-200 text-sm leading-relaxed">{{ clinica.slogan }}</p>
+      <div class="flex gap-4 mt-4">
+        {% if clinica.instagram %}<a href="{{ clinica.instagram }}" target="_blank" class="hover:text-secondary transition-colors"><span class="material-icons-round">photo_camera</span></a>{% endif %}
+        {% if clinica.facebook  %}<a href="{{ clinica.facebook }}"  target="_blank" class="hover:text-secondary transition-colors"><span class="material-icons-round">thumb_up</span></a>{% endif %}
+        {% if clinica.youtube   %}<a href="{{ clinica.youtube }}"   target="_blank" class="hover:text-secondary transition-colors"><span class="material-icons-round">play_circle</span></a>{% endif %}
+      </div>
+    </div>
+
+    <!-- Coluna 2: Links -->
+    <div>
+      <p class="font-semibold text-sm uppercase tracking-widest mb-4 text-green-300">Navegação</p>
+      <ul class="space-y-2 text-sm text-green-100">
+        <li><a href="{% url 'servicos:lista' %}" class="hover:text-white transition-colors">Serviços</a></li>
+        <li><a href="{% url 'exames:lista' %}"   class="hover:text-white transition-colors">Exames e Preços</a></li>
+        <li><a href="{% url 'produtos:lista' %}" class="hover:text-white transition-colors">Loja</a></li>
+        <li><a href="{% url 'core:sobre' %}"     class="hover:text-white transition-colors">Sobre Nós</a></li>
+        <li><a href="{% url 'contato:contato' %}" class="hover:text-white transition-colors">Contato</a></li>
+      </ul>
+    </div>
+
+    <!-- Coluna 3: Contato -->
+    <div>
+      <p class="font-semibold text-sm uppercase tracking-widest mb-4 text-green-300">Contato</p>
+      <ul class="space-y-3 text-sm text-green-100">
+        <li class="flex gap-2 items-start"><span class="material-icons-round text-base mt-0.5">location_on</span>{{ clinica.endereco }}, {{ clinica.bairro }} — {{ clinica.cidade }}/{{ clinica.estado }}</li>
+        <li class="flex gap-2 items-center"><span class="material-icons-round text-base">phone</span>{{ clinica.telefone }}</li>
+        <li class="flex gap-2 items-center"><span class="material-icons-round text-base">mail</span>{{ clinica.email }}</li>
+        <li class="flex gap-2 items-center"><span class="material-icons-round text-base">schedule</span>Seg–Sex: {{ clinica.horario_semana }}</li>
+        <li class="flex gap-2 items-center"><span class="material-icons-round text-base">schedule</span>Sáb: {{ clinica.horario_sabado }}</li>
+      </ul>
+    </div>
+  </div>
+  <div class="border-t border-green-800 text-center py-4 text-xs text-green-400">
+    © {% now "Y" %} {{ clinica.nome }} — Todos os direitos reservados.
+  </div>
+</footer>

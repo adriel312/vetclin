@@ -1,0 +1,62 @@
+{% extends "base/base.html" %}
+{% block title %}Serviços — {{ clinica.nome }}{% endblock %}
+
+{% block content %}
+
+<section class="bg-gradient-to-br from-primary-dark to-primary text-white py-20">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <p class="text-green-300 font-semibold text-sm uppercase tracking-widest mb-3">O que oferecemos</p>
+    <h1 class="font-display text-5xl font-semibold mb-4">Nossos Serviços</h1>
+    <p class="text-green-100 text-lg">Atendimento completo para o bem-estar do seu pet.</p>
+  </div>
+</section>
+
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7">
+    {% for servico in servicos %}
+    <a href="{% url 'servicos:detalhe' servico.slug %}"
+       class="group bg-white rounded-3xl overflow-hidden border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+      {% if servico.imagem %}
+      <div class="h-48 overflow-hidden">
+        <img src="{{ servico.imagem.url }}" alt="{{ servico.nome }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+      </div>
+      {% else %}
+      <div class="h-48 bg-gradient-to-br from-primary/10 to-primary-light/20 flex items-center justify-center">
+        {% if servico.icone %}
+          <span class="material-icons-round text-primary" style="font-size:4rem">{{ servico.icone }}</span>
+        {% else %}
+          <span class="material-icons-round text-primary" style="font-size:4rem">medical_services</span>
+        {% endif %}
+      </div>
+      {% endif %}
+      <div class="p-6">
+        <h2 class="font-semibold text-gray-800 text-xl mb-2 group-hover:text-primary transition-colors">{{ servico.nome }}</h2>
+        <p class="text-gray-500 text-sm leading-relaxed">{{ servico.descricao_curta|default:servico.descricao|truncatewords:20 }}</p>
+        {% if servico.preco_a_partir %}
+        <p class="mt-4 text-primary font-semibold">A partir de R$ {{ servico.preco_a_partir }}</p>
+        {% endif %}
+        <span class="mt-4 inline-flex items-center gap-1 text-primary text-sm font-medium group-hover:gap-2 transition-all">
+          Saiba mais <span class="material-icons-round text-base">arrow_forward</span>
+        </span>
+      </div>
+    </a>
+    {% empty %}
+    <p class="col-span-3 text-center text-gray-400 py-20">Nenhum serviço cadastrado ainda.</p>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- CTA WhatsApp -->
+<section class="bg-gray-50 py-16 text-center">
+  <div class="max-w-xl mx-auto px-4">
+    <span class="material-icons-round text-primary text-5xl mb-4 block">calendar_month</span>
+    <h2 class="font-display text-3xl font-semibold text-gray-800 mb-3">Agende seu atendimento</h2>
+    <p class="text-gray-500 mb-7">Entre em contato pelo WhatsApp e marque sua consulta agora mesmo.</p>
+    <a href="https://wa.me/{{ clinica.whatsapp }}" target="_blank"
+       class="bg-primary text-white px-10 py-3 rounded-full font-semibold hover:bg-primary-dark transition-colors shadow-md inline-block">
+      Agendar pelo WhatsApp
+    </a>
+  </div>
+</section>
+
+{% endblock %}

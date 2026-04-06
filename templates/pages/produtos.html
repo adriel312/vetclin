@@ -1,0 +1,56 @@
+{% extends "base/base.html" %}
+{% block title %}Loja — {{ clinica.nome }}{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+  <div class="text-center mb-12">
+    <p class="text-secondary font-semibold text-sm uppercase tracking-widest mb-2">Loja</p>
+    <h1 class="font-display text-4xl font-semibold text-gray-800">Nossos Produtos</h1>
+  </div>
+
+  <!-- Filtro por categoria (HTMX) -->
+  <div class="flex flex-wrap gap-3 justify-center mb-10">
+    <a href="{% url 'produtos:lista' %}"
+       class="px-4 py-2 rounded-full text-sm font-medium transition-colors
+              {% if not categoria_ativa %}bg-primary text-white{% else %}bg-gray-100 text-gray-600 hover:bg-gray-200{% endif %}">
+      Todos
+    </a>
+    {% for cat in categorias %}
+    <a href="?categoria={{ cat.slug }}"
+       class="px-4 py-2 rounded-full text-sm font-medium transition-colors
+              {% if categoria_ativa == cat.slug %}bg-primary text-white{% else %}bg-gray-100 text-gray-600 hover:bg-gray-200{% endif %}">
+      {{ cat.nome }}
+    </a>
+    {% endfor %}
+  </div>
+
+  <!-- Grid de produtos -->
+  <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
+    {% for produto in produtos %}
+    <a href="{% url 'produtos:detalhe' produto.slug %}"
+       class="group bg-white rounded-2xl overflow-hidden border border-gray-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-200">
+      <div class="aspect-square overflow-hidden bg-gray-50">
+        {% if produto.imagem %}
+          <img src="{{ produto.imagem.url }}" alt="{{ produto.nome }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+        {% else %}
+          <div class="w-full h-full flex items-center justify-center">
+            <span class="material-icons-round text-gray-300 text-5xl">image</span>
+          </div>
+        {% endif %}
+      </div>
+      <div class="p-4">
+        <p class="text-xs text-gray-400 mb-1">{{ produto.categoria.nome }}</p>
+        <p class="font-medium text-gray-800 text-sm leading-snug group-hover:text-primary transition-colors">{{ produto.nome }}</p>
+        {% if produto.preco %}
+          <p class="text-primary font-semibold mt-2">R$ {{ produto.preco }}</p>
+        {% else %}
+          <p class="text-gray-400 text-sm mt-2">Consultar preço</p>
+        {% endif %}
+      </div>
+    </a>
+    {% empty %}
+    <p class="col-span-4 text-center text-gray-400 py-16">Nenhum produto encontrado.</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

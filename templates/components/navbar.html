@@ -1,0 +1,45 @@
+<nav x-data="{ open: false }" class="fixed top-0 w-full z-40 bg-white/90 backdrop-blur-md border-b border-gray-100 shadow-sm">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16">
+      <!-- Logo -->
+      <a href="{% url 'core:home' %}" class="flex items-center gap-2">
+        {% if clinica.logo %}
+          <img src="{{ clinica.logo.url }}" alt="{{ clinica.nome }}" class="h-14 w-auto">
+        {% else %}
+          <span class="material-icons-round text-primary text-3xl">pets</span>
+        {% endif %}
+        <span class="font-display font-semibold text-xl text-primary-dark">{{ clinica.nome|default:"VetClínica" }}</span>
+      </a>
+
+      <!-- Menu desktop -->
+      <div class="hidden md:flex items-center gap-8 text-sm font-medium text-gray-600">
+        <a href="{% url 'core:home' %}" class="hover:text-primary transition-colors">Início</a>
+        <a href="{% url 'servicos:lista' %}" class="hover:text-primary transition-colors">Serviços</a>
+        <a href="{% url 'exames:lista' %}" class="hover:text-primary transition-colors">Exames</a>
+        <a href="{% url 'produtos:lista' %}" class="hover:text-primary transition-colors">Loja</a>
+        <a href="{% url 'core:sobre' %}" class="hover:text-primary transition-colors">Sobre</a>
+        <a href="{% url 'contato:contato' %}"
+           class="bg-primary text-white px-5 py-2 rounded-full hover:bg-primary-dark transition-colors">
+          Contato
+        </a>
+      </div>
+
+      <!-- Hamburguer mobile -->
+      <button @click="open = !open" class="md:hidden text-gray-600">
+        <span class="material-icons-round">{{ open|yesno:"close,menu" }}</span>
+      </button>
+    </div>
+
+    <!-- Menu mobile -->
+    <div x-show="open" x-transition class="md:hidden pb-4 flex flex-col gap-3 text-sm font-medium text-gray-700">
+      <a href="{% url 'core:home' %}" class="py-2 hover:text-primary">Início</a>
+      <a href="{% url 'servicos:lista' %}" class="py-2 hover:text-primary">Serviços</a>
+      <a href="{% url 'exames:lista' %}" class="py-2 hover:text-primary">Exames</a>
+      <a href="{% url 'produtos:lista' %}" class="py-2 hover:text-primary">Loja</a>
+      <a href="{% url 'core:sobre' %}" class="py-2 hover:text-primary">Sobre</a>
+      <a href="{% url 'contato:contato' %}" class="py-2 hover:text-primary">Contato</a>
+    </div>
+  </div>
+</nav>
+<!-- Espaço para a navbar fixa -->
+<div class="h-16"></div>

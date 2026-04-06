@@ -1,0 +1,42 @@
+{% extends "base/base.html" %}
+{% block title %}Exames e Preços — {{ clinica.nome }}{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+  <div class="text-center mb-12">
+    <p class="text-secondary font-semibold text-sm uppercase tracking-widest mb-2">Laboratório</p>
+    <h1 class="font-display text-4xl font-semibold text-gray-800">Exames e Preços</h1>
+    <p class="text-gray-500 mt-3">Preços sujeitos a alteração. Consulte-nos para confirmação.</p>
+  </div>
+
+  {% for grupo in grupos %}
+  <div class="mb-10">
+    <h2 class="font-semibold text-primary text-lg mb-3 pb-2 border-b border-primary/20">{{ grupo.nome }}</h2>
+    <div class="rounded-2xl overflow-hidden border border-gray-100 bg-white shadow-sm">
+      <table class="w-full text-sm">
+        <thead class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider">
+          <tr>
+            <th class="text-left px-5 py-3 font-medium">Exame</th>
+            <th class="text-left px-5 py-3 font-medium">Prazo</th>
+            <th class="text-right px-5 py-3 font-medium">Preço</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-50">
+          {% for exame in grupo.exames.all %}
+          {% if exame.ativo %}
+          <tr class="hover:bg-green-50/50 transition-colors">
+            <td class="px-5 py-3 font-medium text-gray-800">{{ exame.nome }}</td>
+            <td class="px-5 py-3 text-gray-500">{{ exame.prazo_resultado|default:"—" }}</td>
+            <td class="px-5 py-3 text-right font-semibold text-primary">
+              {% if exame.preco %}R$ {{ exame.preco }}{% else %}Consultar{% endif %}
+            </td>
+          </tr>
+          {% endif %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

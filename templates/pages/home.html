@@ -1,0 +1,110 @@
+{% extends "base/base.html" %}
+{% block title %}{{ clinica.nome }} — Cuidando do seu pet com amor{% endblock %}
+
+{% block content %}
+
+<!-- ── Hero ─────────────────────────────────────────────────────────────── -->
+<section class="relative bg-gradient-to-br from-primary-dark via-primary to-primary-light overflow-hidden">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-36 flex flex-col md:flex-row items-center gap-12">
+    <div class="flex-1 text-white">
+      <h1 class="font-display text-5xl md:text-6xl font-semibold leading-tight mb-6">
+        Cuidado<br><em>especializado</em><br>para o seu pet.
+      </h1>
+      <p class="text-green-100 text-lg mb-8 max-w-md">{{ clinica.slogan }}</p>
+      <div class="flex flex-wrap gap-4">
+        <a href="https://wa.me/{{ clinica.whatsapp }}" target="_blank"
+           class="bg-secondary text-white px-8 py-3 rounded-full font-semibold hover:bg-secondary-dark transition-colors shadow-lg">
+          Agendar consulta
+        </a>
+        <a href="{% url 'servicos:lista' %}"
+           class="border border-white/40 text-white px-8 py-3 rounded-full font-semibold hover:bg-white/10 transition-colors">
+          Ver serviços
+        </a>
+      </div>
+    </div>
+    <div class="flex-1 flex justify-center">
+      <div class="w-64 h-64 md:w-80 md:h-80 rounded-full bg-white/10 flex items-center justify-center">
+        <span class="material-icons-round text-white" style="font-size: 8rem">pets</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Serviços em destaque ──────────────────────────────────────────────── -->
+  {% if servicos_destaque %}
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+  <div class="text-center mb-12">
+    <p class="text-secondary font-semibold text-sm uppercase tracking-widest mb-2">O que oferecemos</p>
+    <h2 class="font-display text-4xl font-semibold text-gray-800">Nossos serviços</h2>
+  </div>
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for servico in servicos_destaque %}
+    <a href="{% url 'servicos:detalhe' servico.slug %}"
+       class="group p-6 rounded-2xl border border-gray-100 hover:border-primary/30 hover:shadow-lg hover:-translate-y-1 transition-all duration-200 bg-white">
+      {% if servico.icone %}
+        <span class="material-icons-round text-primary text-4xl mb-4 block">{{ servico.icone }}</span>
+      {% endif %}
+      <h3 class="font-semibold text-gray-800 text-lg mb-2 group-hover:text-primary transition-colors">{{ servico.nome }}</h3>
+      <p class="text-gray-500 text-sm leading-relaxed">{{ servico.descricao_curta }}</p>
+      {% if servico.preco_a_partir %}
+        <p class="mt-3 text-primary font-semibold text-sm">A partir de R$ {{ servico.preco_a_partir }}</p>
+      {% endif %}
+    </a>
+    {% endfor %}
+  </div>
+  <div class="text-center mt-10">
+    <a href="{% url 'servicos:lista' %}" class="text-primary font-semibold hover:underline">Ver todos os serviços →</a>
+  </div>
+</section>
+{% endif %}
+
+<!-- ── Produtos em destaque ──────────────────────────────────────────────── -->
+{% if produtos_destaque %}
+<section class="bg-gray-50 py-20">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-12">
+      <p class="text-secondary font-semibold text-sm uppercase tracking-widest mb-2">Loja</p>
+      <h2 class="font-display text-4xl font-semibold text-gray-800">Produtos em destaque</h2>
+    </div>
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
+      {% for produto in produtos_destaque %}
+      <a href="{% url 'produtos:detalhe' produto.slug %}"
+         class="group bg-white rounded-2xl overflow-hidden border border-gray-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-200">
+        <div class="aspect-square overflow-hidden bg-gray-50">
+          {% if produto.imagem %}
+            <img src="{{ produto.imagem.url }}" alt="{{ produto.nome }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+          {% else %}
+            <div class="w-full h-full flex items-center justify-center">
+              <span class="material-icons-round text-gray-300 text-5xl">image</span>
+            </div>
+          {% endif %}
+        </div>
+        <div class="p-4">
+          <p class="font-medium text-gray-800 text-sm leading-snug group-hover:text-primary transition-colors">{{ produto.nome }}</p>
+          {% if produto.preco %}
+            <p class="text-primary font-semibold mt-1">R$ {{ produto.preco }}</p>
+          {% endif %}
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+    <div class="text-center mt-10">
+      <a href="{% url 'produtos:lista' %}" class="text-primary font-semibold hover:underline">Ver toda a loja →</a>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- ── CTA contato ───────────────────────────────────────────────────────── -->
+<section class="bg-primary py-20 text-white text-center">
+  <div class="max-w-2xl mx-auto px-4">
+    <h2 class="font-display text-4xl font-semibold mb-4">Seu pet merece o melhor cuidado</h2>
+    <p class="text-green-100 mb-8">Agende uma consulta agora mesmo pelo WhatsApp ou entre em contato conosco.</p>
+    <a href="{% url 'contato:contato' %}"
+       class="bg-white text-primary px-10 py-3 rounded-full font-semibold hover:bg-green-50 transition-colors shadow-lg">
+      Fale conosco
+    </a>
+  </div>
+</section>
+
+{% endblock %}

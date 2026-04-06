@@ -1,0 +1,109 @@
+{% extends "base/base.html" %}
+{% block title %}Sobre Nós — {{ clinica.nome }}{% endblock %}
+
+{% block content %}
+
+<!-- Hero -->
+<section class="bg-gradient-to-br from-primary-dark to-primary text-white py-20">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <p class="text-green-300 font-semibold text-sm uppercase tracking-widest mb-3">Quem somos</p>
+    <h1 class="font-display text-5xl font-semibold mb-6">Sobre {{ clinica.nome }}</h1>
+    <p class="text-green-100 text-lg leading-relaxed max-w-2xl mx-auto">{{ clinica.slogan }}</p>
+  </div>
+</section>
+
+<!-- Sobre -->
+<section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+  <div class="prose prose-lg max-w-none text-gray-600 leading-relaxed">
+    {{ clinica.sobre|linebreaks }}
+  </div>
+</section>
+
+<!-- Diferenciais -->
+<section class="bg-gray-50 py-16">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-12">
+      <h2 class="font-display text-3xl font-semibold text-gray-800">Por que nos escolher?</h2>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      {% for item in diferenciais %}
+      <div class="bg-white rounded-2xl p-6 text-center border border-gray-100 shadow-sm">
+        <span class="material-icons-round text-primary text-4xl mb-3 block">{{ item.icone }}</span>
+        <h3 class="font-semibold text-gray-800 mb-1">{{ item.titulo }}</h3>
+        <p class="text-gray-500 text-sm">{{ item.descricao }}</p>
+      </div>
+      {% empty %}
+      <!-- Diferenciais padrão caso não haja no banco -->
+      <div class="bg-white rounded-2xl p-6 text-center border border-gray-100 shadow-sm">
+        <span class="material-icons-round text-primary text-4xl mb-3 block">verified</span>
+        <h3 class="font-semibold text-gray-800 mb-1">Equipe especializada</h3>
+        <p class="text-gray-500 text-sm">Profissionais qualificados e apaixonados por animais.</p>
+      </div>
+      <div class="bg-white rounded-2xl p-6 text-center border border-gray-100 shadow-sm">
+        <span class="material-icons-round text-primary text-4xl mb-3 block">biotech</span>
+        <h3 class="font-semibold text-gray-800 mb-1">Estrutura moderna</h3>
+        <p class="text-gray-500 text-sm">Equipamentos de última geração para diagnósticos precisos.</p>
+      </div>
+      <div class="bg-white rounded-2xl p-6 text-center border border-gray-100 shadow-sm">
+        <span class="material-icons-round text-primary text-4xl mb-3 block">favorite</span>
+        <h3 class="font-semibold text-gray-800 mb-1">Cuidado humanizado</h3>
+        <p class="text-gray-500 text-sm">Atendimento com carinho e atenção para seu pet e família.</p>
+      </div>
+      <div class="bg-white rounded-2xl p-6 text-center border border-gray-100 shadow-sm">
+        <span class="material-icons-round text-primary text-4xl mb-3 block">schedule</span>
+        <h3 class="font-semibold text-gray-800 mb-1">Horários flexíveis</h3>
+        <p class="text-gray-500 text-sm">Atendemos de segunda a sábado para sua conveniência.</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- Equipe -->
+{% if equipe %}
+<section class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+  <div class="text-center mb-12">
+    <p class="text-secondary font-semibold text-sm uppercase tracking-widest mb-2">Nossos profissionais</p>
+    <h2 class="font-display text-4xl font-semibold text-gray-800">Nossa Equipe</h2>
+  </div>
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+    {% for membro in equipe %}
+    <div class="bg-white rounded-3xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+      <div class="aspect-square overflow-hidden bg-gray-100">
+        {% if membro.foto %}
+          <img src="{{ membro.foto.url }}" alt="{{ membro.nome }}" class="w-full h-full object-cover">
+        {% else %}
+          <div class="w-full h-full flex items-center justify-center">
+            <span class="material-icons-round text-gray-300 text-7xl">person</span>
+          </div>
+        {% endif %}
+      </div>
+      <div class="p-6">
+        <h3 class="font-semibold text-gray-800 text-lg">{{ membro.nome }}</h3>
+        <p class="text-primary text-sm font-medium mt-0.5">{{ membro.cargo }}</p>
+        {% if membro.crmv %}
+          <p class="text-gray-400 text-xs mt-1">CRMV: {{ membro.crmv }}</p>
+        {% endif %}
+        {% if membro.bio %}
+          <p class="text-gray-500 text-sm mt-3 leading-relaxed">{{ membro.bio }}</p>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<!-- CTA -->
+<section class="bg-primary py-16 text-white text-center">
+  <div class="max-w-xl mx-auto px-4">
+    <h2 class="font-display text-3xl font-semibold mb-3">Pronto para cuidar do seu pet?</h2>
+    <p class="text-green-100 mb-7">Agende uma consulta e conheça nossa equipe pessoalmente.</p>
+    <a href="https://wa.me/{{ clinica.whatsapp }}" target="_blank"
+       class="bg-white text-primary px-10 py-3 rounded-full font-semibold hover:bg-green-50 transition-colors shadow-lg inline-block">
+      Agendar pelo WhatsApp
+    </a>
+  </div>
+</section>
+
+{% endblock %}
