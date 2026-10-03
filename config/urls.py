@@ -12,6 +12,7 @@ urlpatterns = [
     path('contato/', include('apps.contato.urls')),
 ]
 
+# Em produção, /static/ e /media/ são servidos diretamente pelo Nginx.
 if settings.DEBUG:
     import debug_toolbar
     urlpatterns += [path('__debug__/', include(debug_toolbar.urls))]

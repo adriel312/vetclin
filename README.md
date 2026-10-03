@@ -12,8 +12,8 @@ Sistema web completo para clínica veterinária desenvolvido com **Django 5 + Ta
 | Admin | Django Admin + Unfold |
 | Frontend | Tailwind CSS + HTMX + Alpine.js |
 | Banco de dados | PostgreSQL |
-| Imagens | Cloudinary |
-| Deploy | Railway / Render |
+| Imagens | Disco local do VPS (Cloudinary opcional) |
+| Deploy | VPS Hostinger — Nginx + Gunicorn (ver DEPLOY_HOSTINGER.md) |
 
 ---
 
@@ -106,109 +106,13 @@ O administrador pode editar pelo painel:
 
 ---
 
-## Deploy (Railway)
+## Deploy
+
+O projeto roda num VPS da Hostinger com Nginx + Gunicorn + PostgreSQL.
+O passo a passo completo está em [DEPLOY_HOSTINGER.md](DEPLOY_HOSTINGER.md).
+
+Para publicar uma atualização depois do `git push`:
 
 ```bash
-# Adicione ao requirements.txt:
-gunicorn==22.0.0
-
-# Procfile
-web: gunicorn config.wsgi:application --bind 0.0.0.0:$PORT
+sudo bash /srv/clinica_vet/deploy/atualizar.sh
 ```
-
-No Railway, configure as variáveis de ambiente do `.env.example`.
-
----
-
-## Futuro: Área de Associados
-
-A estrutura já está preparada para adicionar o app `apps.associados` com:
-- Modelo `Plano` (mensal/anual, cobertura)
-- Modelo `Associado` (ligado ao User do Django)
-- Login com área restrita
-- Histórico de consultas e exames
-
-
----
-
-## Deploy no Railway (passo a passo)
-
-### 1. Pré-requisitos
-- Conta no [Railway](https://railway.app)
-- Conta no [Cloudinary](https://cloudinary.com) (gratuito)
-- Repositório Git (GitHub recomendado)
-
-### 2. Suba o código para o GitHub
-```bash
-git init
-git add .
-git commit -m "Initial commit"
-git remote add origin https://github.com/seu-usuario/clinica-vet.git
-git push -u origin main
-```
-
-### 3. Crie o projeto no Railway
-1. Acesse railway.app → New Project → Deploy from GitHub Repo
-2. Selecione o repositório
-3. Railway detecta automaticamente o `Procfile` e o `nixpacks.toml`
-
-### 4. Adicione o PostgreSQL
-No painel Railway: **New Service → Database → PostgreSQL**
-
-O Railway injeta automaticamente a variável `DATABASE_URL`. No `settings.py`, adapte para ler essa variável se preferir usar `dj-database-url`:
-```bash
-pip install dj-database-url
-```
-```python
-import dj_database_url
-DATABASES = {'default': dj_database_url.config(conn_max_age=600)}
-```
-
-### 5. Configure as variáveis de ambiente
-No Railway, vá em **Variables** e adicione todas as variáveis do `.env.example`:
-```
-SECRET_KEY=gere-uma-chave-segura
-DEBUG=False
-ALLOWED_HOSTS=seu-dominio.railway.app
-CLOUDINARY_CLOUD_NAME=...
-CLOUDINARY_API_KEY=...
-CLOUDINARY_API_SECRET=...
-EMAIL_HOST_USER=...
-EMAIL_HOST_PASSWORD=...
-CONTACT_EMAIL=...
-WHATSAPP_NUMBER=...
-```
-
-### 6. Gerar SECRET_KEY segura
-```python
-python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
-```
-
-### 7. Primeiro deploy
-O Railway executa automaticamente (via `nixpacks.toml`):
-- `pip install -r requirements.txt`
-- `python manage.py collectstatic --noinput`
-- `python manage.py migrate`
-
-### 8. Criar superusuário em produção
-No Railway, abra o terminal do serviço e rode:
-```bash
-python manage.py createsuperuser
-```
-
-### Domínio customizado
-No Railway: **Settings → Domains → Custom Domain** → configure o DNS do seu provedor.
-
----
-
-## Checklist de produção
-
-- [ ] `DEBUG=False` no `.env`
-- [ ] `SECRET_KEY` gerada e segura
-- [ ] `ALLOWED_HOSTS` com o domínio real
-- [ ] Cloudinary configurado
-- [ ] E-mail SMTP configurado
-- [ ] Superusuário criado
-- [ ] Primeiro registro de `ClinicaConfig` criado no admin
-- [ ] Migrações aplicadas
-

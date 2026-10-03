@@ -1,5 +1,7 @@
 """
 Configurações do projeto Clínica Veterinária
+Preparado para rodar em desenvolvimento (DEBUG=True) e em produção
+num VPS (Hostinger KVM) com Nginx + Gunicorn + PostgreSQL.
 """
 from pathlib import Path
 from decouple import config, Csv
@@ -8,7 +10,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=Csv())
+
+# Obrigatório no Django 4+ para o login do admin funcionar via HTTPS
+# Ex.: https://meudominio.com.br,https://www.meudominio.com.br
+CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', default='', cast=Csv())
+
+# Cloudinary é opcional. No VPS as imagens ficam no próprio disco (pasta media/).
+USE_CLOUDINARY = config('USE_CLOUDINARY', default=False, cast=bool)
 
 DJANGO_APPS = [
     'unfold',                        # django-unfold 1.0.0
@@ -21,12 +30,13 @@ DJANGO_APPS = [
 ]
 
 THIRD_PARTY_APPS = [
-    'cloudinary',
-    'cloudinary_storage',
     'crispy_forms',
     'crispy_tailwind',
     'django_extensions',
 ]
+
+if USE_CLOUDINARY:
+    THIRD_PARTY_APPS = ['cloudinary', 'cloudinary_storage'] + THIRD_PARTY_APPS
 
 LOCAL_APPS = [
     'apps.core',
@@ -73,12 +83,13 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',  # compatível com psycopg2 e psycopg3
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': config('DB_NAME', default='clinica_vet'),
         'USER': config('DB_USER', default='postgres'),
         'PASSWORD': config('DB_PASSWORD', default=''),
         'HOST': config('DB_HOST', default='localhost'),
         'PORT': config('DB_PORT', default='5432'),
+        'CONN_MAX_AGE': config('DB_CONN_MAX_AGE', default=60, cast=int),
     }
 }
 
@@ -94,35 +105,43 @@ TIME_ZONE = 'America/Sao_Paulo'
 USE_I18N = True
 USE_TZ = True
 
+# ─── Arquivos estáticos (CSS/JS/admin) ────────────────────────────────────────
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-""" Storage com Cloudnary, apenas quanto a app estiver em produção
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': config('CLOUDINARY_CLOUD_NAME', default=''),
-    'API_KEY': config('CLOUDINARY_API_KEY', default=''),
-    'API_SECRET': config('CLOUDINARY_API_SECRET', default=''),
-}"""
+STATICFILES_DIRS = [BASE_DIR / 'static'] if (BASE_DIR / 'static').exists() else []
 
-# ─── Media (usa storage local em dev, Cloudinary em produção) ─────────────────
-if DEBUG:
-    MEDIA_URL = '/media/'
-    MEDIA_ROOT = BASE_DIR / 'media'
-else:
-    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+# ─── Uploads (imagens de produtos, serviços, equipe, logo) ────────────────────
+MEDIA_URL = '/media/'
+MEDIA_ROOT = Path(config('MEDIA_ROOT', default=str(BASE_DIR / 'media')))
+
+# Django 5: STORAGES substitui DEFAULT_FILE_STORAGE / STATICFILES_STORAGE
+STORAGES = {
+    'default': {
+        'BACKEND': 'django.core.files.storage.FileSystemStorage',
+    },
+    'staticfiles': {
+        'BACKEND': (
+            'django.contrib.staticfiles.storage.StaticFilesStorage'
+            if DEBUG else
+            'whitenoise.storage.CompressedManifestStaticFilesStorage'
+        ),
+    },
+}
+
+if USE_CLOUDINARY:
+    STORAGES['default']['BACKEND'] = 'cloudinary_storage.storage.MediaCloudinaryStorage'
     CLOUDINARY_STORAGE = {
         'CLOUD_NAME': config('CLOUDINARY_CLOUD_NAME', default=''),
         'API_KEY':    config('CLOUDINARY_API_KEY', default=''),
         'API_SECRET': config('CLOUDINARY_API_SECRET', default=''),
     }
-    MEDIA_URL = '/media/'
-    MEDIA_ROOT = BASE_DIR / 'media'
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+# Limite de upload (as imagens passam pelo Nginx, que também precisa permitir)
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024
+FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024
+FILE_UPLOAD_PERMISSIONS = 0o644
 
+# ─── E-mail ───────────────────────────────────────────────────────────────────
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
 EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
@@ -131,14 +150,13 @@ EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='')
 CONTACT_EMAIL = config('CONTACT_EMAIL', default='')
+SERVER_EMAIL = DEFAULT_FROM_EMAIL or 'root@localhost'
 
 WHATSAPP_NUMBER = config('WHATSAPP_NUMBER', default='')
 WHATSAPP_MESSAGE = config('WHATSAPP_MESSAGE', default='Ola! Gostaria de mais informacoes.')
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = 'tailwind'
 CRISPY_TEMPLATE_PACK = 'tailwind'
-
-# SEO via meta tags manuais nos templates
 
 UNFOLD = {
     'SITE_TITLE': 'Clinica Veterinaria - Admin',
@@ -173,6 +191,36 @@ UNFOLD = {
                 ],
             },
         ],
+    },
+}
+
+# ─── Segurança em produção (atrás do Nginx com HTTPS) ─────────────────────────
+if not DEBUG:
+    # O Nginx avisa o Django que a requisição original veio por HTTPS
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    USE_X_FORWARDED_HOST = True
+
+    # Ative (=True no .env) só DEPOIS que o certificado SSL estiver instalado
+    HTTPS_ENABLED = config('HTTPS_ENABLED', default=False, cast=bool)
+    SESSION_COOKIE_SECURE = HTTPS_ENABLED
+    CSRF_COOKIE_SECURE = HTTPS_ENABLED
+    SECURE_SSL_REDIRECT = False          # o redirecionamento HTTP→HTTPS é feito pelo Nginx
+    SECURE_HSTS_SECONDS = config('SECURE_HSTS_SECONDS', default=0, cast=int)
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = False
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    SECURE_REFERRER_POLICY = 'same-origin'
+    X_FRAME_OPTIONS = 'DENY'
+
+# ─── Logs (aparecem no journalctl do serviço gunicorn) ────────────────────────
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {'class': 'logging.StreamHandler'},
+    },
+    'root': {'handlers': ['console'], 'level': 'WARNING'},
+    'loggers': {
+        'django': {'handlers': ['console'], 'level': config('DJANGO_LOG_LEVEL', default='INFO'), 'propagate': False},
     },
 }
 
