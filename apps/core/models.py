@@ -1,3 +1,5 @@
+import re
+
 from django.db import models
 
 
@@ -40,6 +42,21 @@ class ClinicaConfig(models.Model):
 
     def __str__(self):
         return self.nome
+
+    @property
+    def whatsapp_numero(self):
+        """Número só com dígitos e com o código do Brasil (55), como o wa.me exige.
+        Aceita qualquer formato no painel: "63 99114-0858", "(63) 99114-0858", "+55 63 99114-0858"."""
+        digitos = re.sub(r'\D', '', self.whatsapp or '')
+        if digitos.startswith('0'):
+            digitos = digitos.lstrip('0')
+        if digitos and not digitos.startswith('55'):
+            digitos = '55' + digitos
+        return digitos
+
+    @property
+    def whatsapp_url(self):
+        return f'https://wa.me/{self.whatsapp_numero}' if self.whatsapp_numero else ''
 
 
 class Membro(models.Model):
