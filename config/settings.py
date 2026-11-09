@@ -75,6 +75,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'apps.core.context_processors.clinica_config',
+                'apps.produtos.context_processors.campanha_ativa',
             ],
         },
     },
@@ -174,6 +175,7 @@ UNFOLD = {
                 'items': [
                     {'title': 'Produtos',   'icon': 'shopping_bag',    'link': '/admin/produtos/produto/'},
                     {'title': 'Categorias', 'icon': 'category',        'link': '/admin/produtos/categoria/'},
+                    {'title': 'Black Friday / Campanhas', 'icon': 'local_offer', 'link': '/admin/produtos/campanha/'},
                 ],
             },
             {
