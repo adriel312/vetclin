@@ -66,6 +66,27 @@
   <!-- Botão flutuante WhatsApp -->
   {% include "components/whatsapp_btn.html" %}
 
+  {% if campanha %}
+  <script>
+    // Contador regressivo da campanha: preenche todos os elementos com data-fim
+    (function () {
+      var alvos = document.querySelectorAll('[data-fim]');
+      if (!alvos.length) return;
+      function dois(n) { return String(n).padStart(2, '0'); }
+      function tick() {
+        alvos.forEach(function (el) {
+          var r = Math.max(0, new Date(el.dataset.fim) - new Date());
+          var s = Math.floor(r / 1000);
+          var v = { d: Math.floor(s / 86400), h: Math.floor(s % 86400 / 3600), m: Math.floor(s % 3600 / 60), s: s % 60 };
+          Object.keys(v).forEach(function (k) {
+            el.querySelectorAll('[data-' + k + ']').forEach(function (n) { n.textContent = dois(v[k]); });
+          });
+        });
+      }
+      tick(); setInterval(tick, 1000);
+    })();
+  </script>
+  {% endif %}
   {% block extra_js %}{% endblock %}
 </body>
 </html>

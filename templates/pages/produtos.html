@@ -2,6 +2,77 @@
 {% block title %}Loja — {{ clinica.nome }}{% endblock %}
 
 {% block content %}
+{% if campanha %}
+<!-- ══ Loja em modo campanha (Black Friday) ═════════════════════════════ -->
+<section class="bg-[#0B1B2E] text-white">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 flex flex-col md:flex-row md:items-end md:justify-between gap-8">
+    <div>
+      <p class="text-[#F59A1B] font-extrabold text-xs uppercase tracking-[.14em] mb-3">Loja · {{ campanha.nome }}</p>
+      <h1 class="font-display text-4xl md:text-6xl font-semibold leading-[1.05]">
+        Até <em class="text-[#F59A1B]">{{ campanha.maior_desconto }}% OFF</em> {% if campanha.toda_loja %}em toda a loja{% else %}na loja{% endif %}
+      </h1>
+      <p class="text-[#C9D8E8] text-lg mt-4 max-w-lg">Peça pelo WhatsApp e retire na clínica. Ofertas válidas até {{ campanha.fim|date:"d/m" }} ou enquanto durar o estoque.</p>
+    </div>
+    <div data-fim="{{ campanha.fim|date:'c' }}">
+      <p class="text-[#C9D8E8] text-xs font-bold uppercase tracking-[.14em] mb-2">Termina em</p>
+      <div class="flex gap-2">
+        <div class="w-16 text-center bg-white/5 border border-white/15 rounded-xl py-2"><span data-d class="block font-display text-3xl tabular-nums">--</span><span class="text-[11px] text-[#C9D8E8]">dias</span></div>
+        <div class="w-16 text-center bg-white/5 border border-white/15 rounded-xl py-2"><span data-h class="block font-display text-3xl tabular-nums">--</span><span class="text-[11px] text-[#C9D8E8]">horas</span></div>
+        <div class="w-16 text-center bg-white/5 border border-white/15 rounded-xl py-2"><span data-m class="block font-display text-3xl tabular-nums">--</span><span class="text-[11px] text-[#C9D8E8]">min</span></div>
+        <div class="w-16 text-center bg-white/5 border border-white/15 rounded-xl py-2"><span data-s class="block font-display text-3xl tabular-nums">--</span><span class="text-[11px] text-[#C9D8E8]">seg</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="bg-[#F3F7FB]">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-12">
+
+  <!-- Categorias -->
+  <div class="flex flex-wrap gap-2.5 justify-center mb-8">
+    <a href="{% url 'produtos:lista' %}"
+       class="px-4 py-2 rounded-full text-sm font-semibold border transition-colors
+              {% if not categoria_ativa %}bg-[#0A5CA0] border-[#0A5CA0] text-white{% else %}bg-white border-gray-200 text-gray-700 hover:border-[#0A5CA0]{% endif %}">Todos</a>
+    {% for cat in categorias %}
+    <a href="?categoria={{ cat.slug }}"
+       class="px-4 py-2 rounded-full text-sm font-semibold border transition-colors
+              {% if categoria_ativa == cat.slug %}bg-[#0A5CA0] border-[#0A5CA0] text-white{% else %}bg-white border-gray-200 text-gray-700 hover:border-[#0A5CA0]{% endif %}">{{ cat.nome }}</a>
+    {% endfor %}
+  </div>
+
+  {% if plano_menor_preco %}
+  <!-- Chamada para o plano -->
+  <div class="bg-[#0A5CA0] text-white rounded-2xl px-5 py-5 md:px-7 flex flex-col sm:flex-row sm:items-center gap-4 mb-10">
+    <span class="w-11 h-11 shrink-0 rounded-xl bg-white/15 flex items-center justify-center"><span class="material-icons-round">health_and_safety</span></span>
+    <div class="flex-1">
+      <p class="font-bold">Conheça o Clube Preventivo, o plano de saúde do seu pet</p>
+      <p class="text-sm text-[#DCEBFA]">Planos a partir de R$ {{ plano_menor_preco|floatformat:"0" }}/mês, com até 30% de desconto em exames e vacinas.</p>
+    </div>
+    <a href="{% url 'planos:lista' %}" class="self-start sm:self-auto bg-[#F59A1B] text-[#05101C] font-bold text-sm px-5 py-2.5 rounded-full hover:brightness-105 transition whitespace-nowrap">Conhecer o Plano</a>
+  </div>
+  {% endif %}
+
+  <!-- Ofertas -->
+  <p class="text-sm text-gray-500 mb-4">{{ em_oferta|length }} produto{{ em_oferta|length|pluralize }} em oferta</p>
+  {% if em_oferta %}
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
+    {% for produto in em_oferta %}{% include "components/produto_card_oferta.html" %}{% endfor %}
+  </div>
+  {% else %}
+  <p class="text-center text-gray-500 py-12 bg-white rounded-2xl border border-gray-200">Nenhuma oferta nesta categoria. Veja os outros produtos abaixo.</p>
+  {% endif %}
+
+  {% if demais %}
+  <h2 class="font-display text-2xl font-semibold text-gray-900 mt-14 mb-5">Outros produtos</h2>
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
+    {% for produto in demais %}{% include "components/produto_card_oferta.html" %}{% endfor %}
+  </div>
+  {% endif %}
+</div>
+</div>
+
+{% else %}
+<!-- ══ Loja normal ══════════════════════════════════════════════════════ -->
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
   <div class="text-center mb-12">
     <p class="text-secondary font-semibold text-sm uppercase tracking-widest mb-2">Loja</p>
@@ -53,4 +124,5 @@
     {% endfor %}
   </div>
 </div>
+{% endif %}
 {% endblock %}

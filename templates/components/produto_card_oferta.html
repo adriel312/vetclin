@@ -1,0 +1,33 @@
+{# Card de produto usado na loja durante uma campanha. Espera "produto" (com produto.oferta) e "clinica". #}
+<div class="bg-white rounded-2xl border border-gray-200 overflow-hidden flex flex-col">
+  <a href="{% url 'produtos:detalhe' produto.slug %}" class="relative block aspect-square bg-white group">
+    {% if produto.imagem %}
+      <img src="{{ produto.imagem.url }}" alt="{{ produto.nome }}" class="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-300">
+    {% else %}
+      <span class="w-full h-full flex items-center justify-center"><span class="material-icons-round text-gray-300 text-5xl">image</span></span>
+    {% endif %}
+    {% if produto.oferta %}
+    <span class="absolute top-3 left-3 bg-[#05101C] text-[#F59A1B] text-xs font-extrabold px-2 py-1 rounded-md">-{{ produto.oferta.pct }}%</span>
+    {% endif %}
+  </a>
+  <div class="p-4 flex flex-col flex-1">
+    {% if produto.categoria %}<p class="text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">{{ produto.categoria.nome }}</p>{% endif %}
+    <a href="{% url 'produtos:detalhe' produto.slug %}" class="font-semibold text-gray-900 text-sm leading-snug hover:text-[#0A5CA0]">{{ produto.nome }}</a>
+    <div class="mt-auto pt-3">
+      {% if produto.oferta %}
+        <p class="text-xs text-gray-500">de <s>R$ {{ produto.oferta.de|floatformat:"2" }}</s></p>
+        <p class="text-[#0A5CA0] font-extrabold text-xl leading-tight">R$ {{ produto.oferta.por|floatformat:"2" }}</p>
+        <p class="text-xs font-bold text-[#0B6B4E]">Economize R$ {{ produto.oferta.economia|floatformat:"2" }}</p>
+      {% elif produto.preco %}
+        <p class="text-[#0A5CA0] font-extrabold text-xl leading-tight">R$ {{ produto.preco|floatformat:"2" }}</p>
+      {% else %}
+        <p class="text-gray-500 text-sm">Consultar preço</p>
+      {% endif %}
+    </div>
+    {% if clinica.whatsapp_url %}
+    <a href="{{ clinica.whatsapp_url }}?text={% filter urlencode %}{% autoescape off %}Olá! Quero pedir: {{ produto.nome }}{% if produto.oferta %} (oferta {{ campanha.nome }}, R$ {{ produto.oferta.por|floatformat:"2" }}){% endif %}{% endautoescape %}{% endfilter %}"
+       target="_blank" rel="noopener"
+       class="mt-4 block text-center bg-[#0A5CA0] text-white text-sm font-bold py-2.5 rounded-full hover:bg-[#014880] transition-colors">Pedir pelo WhatsApp</a>
+    {% endif %}
+  </div>
+</div>

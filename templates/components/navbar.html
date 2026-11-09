@@ -1,4 +1,17 @@
 <nav x-data="{ open: false }" class="fixed top-0 w-full z-40 bg-white/90 backdrop-blur-md border-b border-gray-100 shadow-sm">
+  {% if campanha %}
+  <!-- Faixa da campanha (some sozinha quando a campanha termina) -->
+  <div class="bg-[#05101C] text-white h-9 overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center justify-center gap-3 sm:gap-5 text-xs sm:text-sm whitespace-nowrap">
+      <span class="bg-[#F59A1B] text-[#05101C] font-extrabold tracking-wider px-2 py-0.5 rounded text-[11px] uppercase">{{ campanha.nome }}</span>
+      <span class="hidden md:inline text-[#DCEBFA] truncate">{{ campanha.frase_faixa }}</span>
+      <span class="hidden sm:inline text-[#F59A1B] font-bold tabular-nums" data-fim="{{ campanha.fim|date:'c' }}">
+        Termina em <span data-d>--</span>d <span data-h>--</span>h <span data-m>--</span>m <span data-s>--</span>s
+      </span>
+      <a href="{% url 'produtos:lista' %}" class="font-bold underline underline-offset-4 hover:text-[#F59A1B]">Ver ofertas</a>
+    </div>
+  </div>
+  {% endif %}
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex items-center justify-between h-16">
       <!-- Logo -->
@@ -44,4 +57,4 @@
   </div>
 </nav>
 <!-- Espaço para a navbar fixa -->
-<div class="h-16"></div>
+<div class="{% if campanha %}h-[100px]{% else %}h-16{% endif %}"></div>
