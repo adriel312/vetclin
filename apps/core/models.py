@@ -12,6 +12,10 @@ class ClinicaConfig(models.Model):
     slogan = models.CharField('Slogan', max_length=200, blank=True)
     sobre = models.TextField('Sobre a clínica')
     logo = models.ImageField('Logo', upload_to='clinica/', blank=True, null=True)
+    imagem_topo = models.ImageField(
+        'Imagem do topo da página inicial', upload_to='clinica/', blank=True, null=True,
+        help_text='Aparece no lugar da patinha, ao lado de "Cuidado especializado". '
+                  'Use uma foto quadrada (ex.: 800×800), com o assunto no centro.')
 
     # Contato
     telefone = models.CharField('Telefone', max_length=20)
