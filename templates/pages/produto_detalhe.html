@@ -59,7 +59,7 @@
 
       <!-- Ações -->
       <div class="space-y-3 pt-2">
-        <a href="https://wa.me/{{ clinica.whatsapp }}?text=Olá! Tenho interesse no produto: {{ produto.nome }}"
+        <a href="{{ clinica.whatsapp_url }}?text={% filter urlencode %}{% autoescape off %}Olá! Tenho interesse no produto: {{ produto.nome }}{% endautoescape %}{% endfilter %}"
            target="_blank"
            class="w-full flex items-center justify-center gap-2 bg-[#25D366] text-white py-3.5 rounded-2xl font-semibold hover:bg-green-600 transition-colors shadow-md">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 32 32" fill="white">

@@ -40,7 +40,7 @@
         </div>
         {% endif %}
 
-        <a href="https://wa.me/{{ clinica.whatsapp }}?text=Olá! Gostaria de agendar: {{ servico.nome }}"
+        <a href="{{ clinica.whatsapp_url }}?text={% filter urlencode %}{% autoescape off %}Olá! Gostaria de agendar: {{ servico.nome }}{% endautoescape %}{% endfilter %}"
            target="_blank"
            class="w-full flex items-center justify-center gap-2 bg-primary text-white py-3 rounded-2xl font-semibold hover:bg-primary-dark transition-colors shadow-md">
           <span class="material-icons-round">calendar_month</span>

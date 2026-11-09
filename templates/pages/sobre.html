@@ -99,7 +99,7 @@
   <div class="max-w-xl mx-auto px-4">
     <h2 class="font-display text-3xl font-semibold mb-3">Pronto para cuidar do seu pet?</h2>
     <p class="text-green-100 mb-7">Agende uma consulta e conheça nossa equipe pessoalmente.</p>
-    <a href="https://wa.me/{{ clinica.whatsapp }}" target="_blank"
+    <a href="{{ clinica.whatsapp_url }}?text={{ 'Olá! Gostaria de agendar uma consulta.'|urlencode }}" target="_blank"
        class="bg-white text-primary px-10 py-3 rounded-full font-semibold hover:bg-green-50 transition-colors shadow-lg inline-block">
       Agendar pelo WhatsApp
     </a>
