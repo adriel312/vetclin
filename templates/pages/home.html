@@ -1,4 +1,5 @@
 {% extends "base/base.html" %}
+{% load ofertas %}
 {% block title %}{{ clinica.nome }} — Cuidando do seu pet com amor{% endblock %}
 
 {% block content %}
@@ -86,9 +87,14 @@
         </div>
         <div class="p-4">
           <p class="font-medium text-gray-800 text-sm leading-snug group-hover:text-primary transition-colors">{{ produto.nome }}</p>
-          {% if produto.preco %}
+          {% with o=produto|oferta:campanha %}
+          {% if o %}
+            <p class="text-xs text-gray-400 mt-1">de <s>R$ {{ o.de|floatformat:"2" }}</s> <span class="font-bold text-[#B36008]">-{{ o.pct }}%</span></p>
+            <p class="text-primary font-semibold">R$ {{ o.por|floatformat:"2" }}</p>
+          {% elif produto.preco %}
             <p class="text-primary font-semibold mt-1">R$ {{ produto.preco }}</p>
           {% endif %}
+          {% endwith %}
         </div>
       </a>
       {% endfor %}

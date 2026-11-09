@@ -1,4 +1,5 @@
 {% extends "base/base.html" %}
+{% load ofertas %}
 {% block title %}{{ produto.nome }} — {{ clinica.nome }}{% endblock %}
 
 {% block content %}
@@ -44,12 +45,23 @@
       <p class="text-gray-400 text-sm">Marca: <span class="text-gray-600 font-medium">{{ produto.marca }}</span></p>
       {% endif %}
 
-      {% if produto.preco %}
+      {% with o=produto|oferta:campanha %}
+      {% if o %}
+      <div class="py-4 border-t border-b border-gray-100">
+        <p class="flex items-center gap-2 text-sm mb-1">
+          <span class="bg-[#05101C] text-[#F59A1B] text-xs font-extrabold px-2 py-0.5 rounded">{{ campanha.nome }} -{{ o.pct }}%</span>
+          <span class="text-gray-400">de <s>R$ {{ o.de|floatformat:"2" }}</s></span>
+        </p>
+        <p class="font-display text-4xl font-semibold text-primary">R$ {{ o.por|floatformat:"2" }}</p>
+        <p class="text-sm font-semibold text-[#0B6B4E] mt-1">Economize R$ {{ o.economia|floatformat:"2" }} · oferta válida até {{ campanha.fim|date:"d/m" }}</p>
+      </div>
+      {% elif produto.preco %}
       <div class="py-4 border-t border-b border-gray-100">
         <p class="text-sm text-gray-400 mb-1">Preço</p>
         <p class="font-display text-4xl font-semibold text-primary">R$ {{ produto.preco }}</p>
       </div>
       {% endif %}
+      {% endwith %}
 
       {% if produto.descricao %}
       <div class="text-gray-600 text-sm leading-relaxed">
@@ -97,7 +109,7 @@
         </div>
         <div class="p-4">
           <p class="font-medium text-gray-800 text-sm group-hover:text-primary transition-colors">{{ rel.nome }}</p>
-          {% if rel.preco %}<p class="text-primary font-semibold text-sm mt-1">R$ {{ rel.preco }}</p>{% endif %}
+          {% with o=rel|oferta:campanha %}{% if o %}<p class="text-xs text-gray-400 mt-1">de <s>R$ {{ o.de|floatformat:"2" }}</s> <span class="font-bold text-[#B36008]">-{{ o.pct }}%</span></p><p class="text-primary font-semibold text-sm">R$ {{ o.por|floatformat:"2" }}</p>{% elif rel.preco %}<p class="text-primary font-semibold text-sm mt-1">R$ {{ rel.preco }}</p>{% endif %}{% endwith %}
         </div>
       </a>
       {% endfor %}
