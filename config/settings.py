@@ -44,6 +44,7 @@ LOCAL_APPS = [
     'apps.servicos',
     'apps.exames',
     'apps.contato',
+    'apps.planos',
     'apps.painel',
 ]
 
@@ -173,6 +174,14 @@ UNFOLD = {
                 'items': [
                     {'title': 'Produtos',   'icon': 'shopping_bag',    'link': '/admin/produtos/produto/'},
                     {'title': 'Categorias', 'icon': 'category',        'link': '/admin/produtos/categoria/'},
+                ],
+            },
+            {
+                'title': 'Plano de Saude',
+                'items': [
+                    {'title': 'Planos',     'icon': 'health_and_safety', 'link': '/admin/planos/plano/'},
+                    {'title': 'Pagina e video', 'icon': 'movie',       'link': '/admin/planos/paginaplano/'},
+                    {'title': 'Perguntas',  'icon': 'help',            'link': '/admin/planos/perguntafrequente/'},
                 ],
             },
             {
