@@ -23,9 +23,14 @@
       </div>
     </div>
     <div class="flex-1 flex justify-center">
+      {% if clinica.imagem_topo %}
+      <img src="{{ clinica.imagem_topo.url }}" alt="{{ clinica.nome }}"
+           class="w-64 h-64 md:w-80 md:h-80 rounded-full object-cover ring-8 ring-white/15 shadow-2xl">
+      {% else %}
       <div class="w-64 h-64 md:w-80 md:h-80 rounded-full bg-white/10 flex items-center justify-center">
         <span class="material-icons-round text-white" style="font-size: 8rem">pets</span>
       </div>
+      {% endif %}
     </div>
   </div>
 </section>
