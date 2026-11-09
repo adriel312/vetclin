@@ -1,0 +1,211 @@
+{% extends "base/base.html" %}
+{% block title %}Plano de Saúde Pet — {{ clinica.nome }}{% endblock %}
+
+{% block extra_head %}<style>[x-cloak]{display:none!important}</style>{% endblock %}
+
+{% block content %}
+
+<!-- ── Topo ─────────────────────────────────────────────────────────── -->
+<section class="relative overflow-hidden bg-[#0A5CA0] text-white">
+  <span class="material-icons-round absolute -right-10 -top-6 text-white/5 select-none pointer-events-none" style="font-size:320px" aria-hidden="true">pets</span>
+  <div class="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 grid md:grid-cols-2 gap-12 items-center">
+    <div>
+      <span class="inline-block bg-[#8EF0D3] text-[#063A2B] text-xs font-extrabold tracking-[.12em] px-3 py-1.5 rounded-full mb-6">NOVO · PLANO DE SAÚDE PET</span>
+      <h1 class="font-display text-4xl md:text-6xl font-semibold leading-[1.05] mb-6">
+        Clube Preventivo: <em class="text-[#FFC46B]">mais cuidado, menos gasto.</em>
+      </h1>
+      <p class="text-lg text-[#DCEBFA] max-w-lg mb-8">
+        Consultas, exames e descontos em vacinas, cirurgias e internação por uma mensalidade fixa,
+        na clínica que você já conhece.
+      </p>
+      <div class="flex flex-wrap gap-4">
+        <a href="#planos" class="bg-[#F59A1B] text-[#05101C] font-bold px-7 py-3.5 rounded-full hover:brightness-105 transition">Ver os planos</a>
+        {% if clinica.whatsapp_url %}
+        <a href="{{ clinica.whatsapp_url }}?text={{ 'Olá! Vi o Plano de Saúde Pet no site e quero saber mais.'|urlencode }}" target="_blank" rel="noopener"
+           class="border-2 border-white/70 font-bold px-7 py-3 rounded-full hover:bg-white/10 transition">Tirar dúvidas no WhatsApp</a>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if menor_preco %}
+    <div class="bg-white text-gray-800 rounded-3xl p-7 md:p-8 shadow-2xl max-w-md md:ml-auto w-full">
+      <p class="text-sm font-bold text-gray-500">Planos a partir de</p>
+      <p class="flex items-baseline gap-1 mt-1 mb-5">
+        <span class="text-xl font-bold text-[#0A5CA0]">R$</span>
+        <span class="font-display text-7xl font-semibold text-[#0A5CA0] leading-none">{{ menor_preco|floatformat:"0" }}</span>
+        <span class="text-gray-500">/mês</span>
+      </p>
+      <ul class="space-y-2.5 text-sm">
+        <li class="flex gap-2"><span class="material-icons-round text-[#0B6B4E] text-lg">check</span>Consultas inclusas ou com coparticipação reduzida</li>
+        <li class="flex gap-2"><span class="material-icons-round text-[#0B6B4E] text-lg">check</span>Até 30% de desconto em exames e vacinas</li>
+        <li class="flex gap-2"><span class="material-icons-round text-[#0B6B4E] text-lg">check</span>Descontos em cirurgias e internação</li>
+        <li class="flex gap-2"><span class="material-icons-round text-[#0B6B4E] text-lg">check</span>Lembretes de vacinas e prioridade no atendimento</li>
+      </ul>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- ── Vídeo (aparece quando houver vídeo no painel) ────────────────── -->
+{% if pagina and pagina.video %}
+<section class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 md:pt-20">
+  <div class="grid md:grid-cols-2 gap-10 items-center">
+    <div class="md:order-2 flex justify-center">
+      <video class="block w-auto max-w-full max-h-[640px] rounded-3xl shadow-2xl bg-[#0B1B2E]"
+             src="{{ pagina.video.url }}" {% if pagina.video_capa %}poster="{{ pagina.video_capa.url }}"{% endif %}
+             autoplay muted loop playsinline controls preload="metadata"></video>
+    </div>
+    <div class="md:order-1">
+      <p class="text-secondary font-bold text-xs uppercase tracking-[.14em] mb-2">Em vídeo</p>
+      <h2 class="font-display text-3xl md:text-4xl font-semibold text-gray-900 mb-4">{{ pagina.video_titulo }}</h2>
+      {% if pagina.video_texto %}<p class="text-gray-600 text-lg leading-relaxed max-w-md">{{ pagina.video_texto }}</p>{% endif %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- ── Como funciona ────────────────────────────────────────────────── -->
+<section class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
+  <p class="text-secondary font-bold text-xs uppercase tracking-[.14em] mb-2">Como funciona</p>
+  <h2 class="font-display text-3xl md:text-4xl font-semibold text-gray-900 mb-10">Simples como uma consulta</h2>
+  <div class="grid md:grid-cols-3 gap-5">
+    <div class="bg-[#F3F7FB] rounded-2xl p-6">
+      <span class="w-10 h-10 rounded-full bg-[#0A5CA0] text-white font-display text-lg font-semibold flex items-center justify-center mb-4">1</span>
+      <h3 class="font-semibold text-gray-900 mb-1">Escolha o plano</h3>
+      <p class="text-sm text-gray-600">Compare as coberturas abaixo e veja qual combina com a rotina e a fase de vida do seu pet.</p>
+    </div>
+    <div class="bg-[#F3F7FB] rounded-2xl p-6">
+      <span class="w-10 h-10 rounded-full bg-[#0A5CA0] text-white font-display text-lg font-semibold flex items-center justify-center mb-4">2</span>
+      <h3 class="font-semibold text-gray-900 mb-1">Assine com a gente</h3>
+      <p class="text-sm text-gray-600">Fale com a equipe pelo WhatsApp ou na recepção. Fazemos o cadastro do seu pet na hora.</p>
+    </div>
+    <div class="bg-[#F3F7FB] rounded-2xl p-6">
+      <span class="w-10 h-10 rounded-full bg-[#0A5CA0] text-white font-display text-lg font-semibold flex items-center justify-center mb-4">3</span>
+      <h3 class="font-semibold text-gray-900 mb-1">Use o ano todo</h3>
+      <p class="text-sm text-gray-600">Agende consultas, faça os exames inclusos e aproveite os descontos sempre que o seu pet precisar.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── Planos ───────────────────────────────────────────────────────── -->
+<section id="planos" class="bg-[#F3F7FB] scroll-mt-16">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
+    <div class="text-center mb-14">
+      <p class="text-secondary font-bold text-xs uppercase tracking-[.14em] mb-2">Planos e coberturas</p>
+      <h2 class="font-display text-3xl md:text-4xl font-semibold text-gray-900">Escolha o cuidado ideal para o seu pet</h2>
+    </div>
+
+    {% if planos %}
+    <div class="grid gap-8 lg:gap-6 {% if planos|length >= 3 %}lg:grid-cols-3 max-w-xl lg:max-w-none mx-auto{% elif planos|length == 2 %}md:grid-cols-2 max-w-4xl mx-auto{% else %}max-w-md mx-auto{% endif %} items-start">
+      {% for plano in planos %}
+      <div class="relative flex flex-col rounded-3xl p-7 {% if plano.destaque %}bg-[#0A5CA0] text-white shadow-2xl{% else %}bg-white border border-gray-200{% endif %}">
+        {% if plano.destaque %}
+        <span class="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#F59A1B] text-[#05101C] text-xs font-extrabold tracking-wider px-3 py-1 rounded-full whitespace-nowrap">RECOMENDADO</span>
+        {% endif %}
+        <h3 class="font-display text-2xl font-semibold">Plano {{ plano.nome }}</h3>
+        {% if plano.subtitulo %}<p class="text-sm mt-1 {% if plano.destaque %}text-[#DCEBFA]{% else %}text-gray-500{% endif %}">{{ plano.subtitulo }}</p>{% endif %}
+
+        <p class="flex items-baseline gap-1 mt-5">
+          <span class="font-bold {% if plano.destaque %}text-white{% else %}text-[#0A5CA0]{% endif %}">R$</span>
+          <span class="font-display text-5xl font-semibold leading-none {% if plano.destaque %}text-white{% else %}text-[#0A5CA0]{% endif %}">{{ plano.preco_mensal|floatformat:"2" }}</span>
+          <span class="{% if plano.destaque %}text-[#DCEBFA]{% else %}text-gray-500{% endif %}">/mês</span>
+        </p>
+        {% if plano.economia_anual %}
+        <p class="mt-3 text-sm font-semibold inline-flex self-start rounded-full px-3 py-1 {% if plano.destaque %}bg-white/15 text-[#8EF0D3]{% else %}bg-[#E6F6F0] text-[#0B6B4E]{% endif %}">
+          Economia de até R$ {{ plano.economia_anual|floatformat:"2" }} por ano
+        </p>
+        {% endif %}
+
+        {% if plano.inclusos %}
+        <p class="mt-7 mb-3 text-xs font-extrabold uppercase tracking-[.12em] {% if plano.destaque %}text-[#8EF0D3]{% else %}text-[#0B6B4E]{% endif %}">Incluso</p>
+        <ul class="space-y-2.5 text-sm">
+          {% for b in plano.inclusos %}
+          <li class="flex gap-2.5">
+            <span class="material-icons-round text-lg {% if plano.destaque %}text-[#8EF0D3]{% else %}text-[#0B6B4E]{% endif %}">check_circle</span>
+            <span class="pt-0.5 font-semibold">{{ b.texto }}</span>
+          </li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+
+        {% if plano.descontos %}
+        <p class="mt-7 mb-2 text-xs font-extrabold uppercase tracking-[.12em] {% if plano.destaque %}text-[#8EF0D3]{% else %}text-[#0B6B4E]{% endif %}">Descontos</p>
+        <ul class="text-sm divide-y {% if plano.destaque %}divide-white/15{% else %}divide-gray-100{% endif %}">
+          {% for b in plano.descontos %}
+          <li class="flex items-center justify-between gap-3 py-2">
+            <span>{{ b.texto }}</span>
+            {% if b.valor %}
+            <span class="shrink-0 font-bold tabular-nums px-2 py-0.5 rounded-md {% if plano.destaque %}bg-[#F59A1B] text-[#05101C]{% else %}bg-[#FFF1DC] text-[#8A4B00]{% endif %}">-{{ b.valor }}</span>
+            {% endif %}
+          </li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+
+        {% if plano.adicionais %}
+        <p class="mt-7 mb-3 text-xs font-extrabold uppercase tracking-[.12em] {% if plano.destaque %}text-[#8EF0D3]{% else %}text-[#0B6B4E]{% endif %}">Benefícios adicionais</p>
+        <ul class="space-y-2 text-sm">
+          {% for b in plano.adicionais %}
+          <li class="flex gap-2.5">
+            <span class="material-icons-round text-lg {% if plano.destaque %}text-[#8EF0D3]{% else %}text-[#0B6B4E]{% endif %}">done</span>
+            <span class="pt-0.5">{{ b.texto }}</span>
+          </li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+
+        {% if clinica.whatsapp_url %}
+        <a href="{{ clinica.whatsapp_url }}?text={% filter urlencode %}{% autoescape off %}Olá! Quero assinar o Plano {{ plano.nome }} do Clube Preventivo.{% endautoescape %}{% endfilter %}"
+           target="_blank" rel="noopener"
+           class="mt-8 block text-center font-bold py-3.5 rounded-full transition {% if plano.destaque %}bg-[#F59A1B] text-[#05101C] hover:brightness-105{% else %}bg-[#0A5CA0] text-white hover:bg-[#014880]{% endif %}">
+          Quero o Plano {{ plano.nome }}
+        </a>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+    {% if pagina.observacao %}
+    <p class="max-w-3xl mx-auto text-center text-xs text-gray-500 mt-10 leading-relaxed">{{ pagina.observacao }}</p>
+    {% endif %}
+    {% else %}
+    <div class="max-w-lg mx-auto text-center bg-white rounded-3xl p-10 border border-gray-200">
+      <span class="material-icons-round text-5xl text-[#0A5CA0]">health_and_safety</span>
+      <p class="font-semibold text-gray-900 mt-3">Os planos estão chegando!</p>
+      <p class="text-sm text-gray-500 mt-1">Fale com a gente pelo WhatsApp para saber as condições de lançamento.</p>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- ── Perguntas frequentes ─────────────────────────────────────────── -->
+{% if perguntas %}
+<section class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
+  <h2 class="font-display text-3xl md:text-4xl font-semibold text-gray-900 text-center mb-10">Perguntas frequentes</h2>
+  <div class="divide-y divide-gray-200 border-y border-gray-200">
+    {% for p in perguntas %}
+    <div x-data="{ aberto: false }">
+      <button @click="aberto = !aberto" class="w-full flex justify-between items-center gap-4 py-5 text-left font-semibold text-gray-900">
+        {{ p.pergunta }}
+        <span class="material-icons-round text-[#0A5CA0] transition-transform" :class="aberto && 'rotate-45'">add</span>
+      </button>
+      <div x-show="aberto" x-transition x-cloak class="pb-5 -mt-1 text-gray-600 text-sm leading-relaxed">{{ p.resposta|linebreaksbr }}</div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<!-- ── Chamada final ────────────────────────────────────────────────── -->
+<section class="bg-[#0B1B2E] text-white">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20 text-center">
+    <h2 class="font-display text-3xl md:text-5xl font-semibold leading-tight">Prevenir é o melhor <em class="text-[#F59A1B]">jeito de cuidar.</em></h2>
+    <p class="text-[#C9D8E8] mt-4 mb-8">Fale com a nossa equipe e coloque seu pet no Clube Preventivo hoje mesmo.</p>
+    {% if clinica.whatsapp_url %}
+    <a href="{{ clinica.whatsapp_url }}?text={{ 'Olá! Quero colocar meu pet no Clube Preventivo.'|urlencode }}" target="_blank" rel="noopener"
+       class="inline-flex items-center gap-2 bg-[#F59A1B] text-[#05101C] font-bold px-8 py-3.5 rounded-full hover:brightness-105 transition">
+      <span class="material-icons-round text-xl">chat</span> Chamar no WhatsApp
+    </a>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
