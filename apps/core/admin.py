@@ -10,7 +10,7 @@ class ClinicaConfigAdmin(ModelAdmin):
         return not ClinicaConfig.objects.exists()
 
     fieldsets = (
-        ('Identidade', {'fields': ('nome', 'slogan', 'logo', 'imagem_topo', 'sobre')}),
+        ('Identidade', {'fields': ('nome', 'slogan', 'logo', 'favicon', 'imagem_topo', 'sobre')}),
         ('Contato',    {'fields': ('telefone', 'whatsapp', 'email')}),
         ('Endereço',   {'fields': ('endereco', 'bairro', 'cidade', 'estado', 'cep', 'google_maps_embed')}),
         ('Horários',   {'fields': ('horario_semana', 'horario_sabado', 'horario_domingo')}),
