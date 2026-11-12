@@ -5,6 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}{{ clinica.nome|default:"Clínica Veterinária" }}{% endblock %}</title>
 
+  <!-- Ícone da aba (painel → Configurações da Clínica) -->
+  {% if clinica.favicon %}
+  <link rel="icon" href="{{ clinica.favicon.url }}">
+  <link rel="apple-touch-icon" href="{{ clinica.favicon.url }}">
+  {% elif clinica.logo %}
+  <link rel="icon" href="{{ clinica.logo.url }}">
+  <link rel="apple-touch-icon" href="{{ clinica.logo.url }}">
+  {% endif %}
+
   <!-- Tailwind CSS (CDN para desenvolvimento — use build em produção) -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
