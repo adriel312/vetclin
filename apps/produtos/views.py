@@ -5,7 +5,7 @@ from .models import Campanha, Categoria, Produto
 def lista(request):
     categorias = Categoria.objects.all()
     categoria_slug = request.GET.get('categoria')
-    produtos = Produto.objects.filter(ativo=True).select_related('categoria')
+    produtos = Produto.objects.filter(ativo=True).select_related('categoria').prefetch_related('tamanhos')
     if categoria_slug:
         produtos = produtos.filter(categoria__slug=categoria_slug)
 
@@ -33,6 +33,6 @@ def lista(request):
 
 
 def detalhe(request, slug):
-    produto = get_object_or_404(Produto, slug=slug, ativo=True)
+    produto = get_object_or_404(Produto.objects.prefetch_related('tamanhos'), slug=slug, ativo=True)
     relacionados = Produto.objects.filter(categoria=produto.categoria, ativo=True).exclude(pk=produto.pk)[:4]
     return render(request, 'pages/produto_detalhe.html', {'produto': produto, 'relacionados': relacionados})

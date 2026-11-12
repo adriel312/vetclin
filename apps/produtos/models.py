@@ -51,6 +51,34 @@ class Produto(models.Model):
             self.slug = slugify(self.nome)
         super().save(*args, **kwargs)
 
+    @cached_property
+    def tamanhos_ativos(self):
+        return [t for t in self.tamanhos.all() if t.ativo]
+
+    def sincronizar_preco(self):
+        """Com tamanhos cadastrados, o preço do produto passa a ser o do menor tamanho ("a partir de")."""
+        menor = self.tamanhos.filter(ativo=True).order_by('preco').values_list('preco', flat=True).first()
+        if menor is not None and menor != self.preco:
+            self.preco = menor
+            super().save(update_fields=['preco'])
+
+
+class Tamanho(models.Model):
+    """Opção de tamanho/peso de um produto (ex.: ração de 1 kg, 3 kg, 10 kg), cada uma com seu preço."""
+    produto = models.ForeignKey(Produto, on_delete=models.CASCADE, related_name='tamanhos')
+    nome = models.CharField('Tamanho', max_length=30, help_text='Ex.: "1 kg", "10,1 kg", "500 ml".')
+    preco = models.DecimalField('Preço (R$)', max_digits=10, decimal_places=2)
+    ordem = models.PositiveSmallIntegerField('Ordem', default=0)
+    ativo = models.BooleanField('Disponível', default=True)
+
+    class Meta:
+        verbose_name = 'Tamanho'
+        verbose_name_plural = 'Tamanhos'
+        ordering = ['ordem', 'preco']
+
+    def __str__(self):
+        return f'{self.produto} — {self.nome}'
+
 
 class Campanha(models.Model):
     """Promoção com data de início e fim (ex.: Black Friday).
@@ -102,12 +130,14 @@ class Campanha(models.Model):
             valores.append(self.desconto_padrao)
         return max(valores, default=self.desconto_padrao)
 
-    def oferta(self, produto):
+    def oferta(self, produto, preco=None):
+        """Desconto do produto. "preco" permite calcular para um tamanho específico."""
         pct = self.desconto_de(produto)
-        if not pct:
+        preco = produto.preco if preco is None else preco
+        if not pct or not preco:
             return None
-        final = (produto.preco * (100 - pct) / Decimal(100)).quantize(Decimal('0.01'), ROUND_HALF_UP)
-        return {'pct': pct, 'de': produto.preco, 'por': final, 'economia': produto.preco - final}
+        final = (preco * (100 - pct) / Decimal(100)).quantize(Decimal('0.01'), ROUND_HALF_UP)
+        return {'pct': pct, 'de': preco, 'por': final, 'economia': preco - final}
 
 
 class ItemCampanha(models.Model):
