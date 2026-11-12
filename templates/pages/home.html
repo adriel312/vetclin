@@ -87,6 +87,7 @@
         </div>
         <div class="p-4">
           <p class="font-medium text-gray-800 text-sm leading-snug group-hover:text-primary transition-colors">{{ produto.nome }}</p>
+          {% if produto.tamanhos_ativos|length > 1 %}<p class="text-[11px] font-semibold text-gray-500 mt-2">{{ produto.tamanhos_ativos|length }} tamanhos · a partir de</p>{% endif %}
           {% with o=produto|oferta:campanha %}
           {% if o %}
             <p class="text-xs text-gray-400 mt-1">de <s>R$ {{ o.de|floatformat:"2" }}</s> <span class="font-bold text-[#B36008]">-{{ o.pct }}%</span></p>

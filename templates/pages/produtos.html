@@ -113,7 +113,8 @@
         <p class="text-xs text-gray-400 mb-1">{{ produto.categoria.nome }}</p>
         <p class="font-medium text-gray-800 text-sm leading-snug group-hover:text-primary transition-colors">{{ produto.nome }}</p>
         {% if produto.preco %}
-          <p class="text-primary font-semibold mt-2">R$ {{ produto.preco }}</p>
+          {% if produto.tamanhos_ativos|length > 1 %}<p class="text-[11px] font-semibold text-gray-500 mt-2">{{ produto.tamanhos_ativos|length }} tamanhos · a partir de</p>{% endif %}
+          <p class="text-primary font-semibold {% if produto.tamanhos_ativos|length > 1 %}mt-0{% else %}mt-2{% endif %}">R$ {{ produto.preco }}</p>
         {% else %}
           <p class="text-gray-400 text-sm mt-2">Consultar preço</p>
         {% endif %}

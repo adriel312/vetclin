@@ -14,6 +14,7 @@
     {% if produto.categoria %}<p class="text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">{{ produto.categoria.nome }}</p>{% endif %}
     <a href="{% url 'produtos:detalhe' produto.slug %}" class="font-semibold text-gray-900 text-sm leading-snug hover:text-[#0A5CA0]">{{ produto.nome }}</a>
     <div class="mt-auto pt-3">
+      {% if produto.tamanhos_ativos|length > 1 %}<p class="text-[11px] font-semibold text-gray-500 mt-2">{{ produto.tamanhos_ativos|length }} tamanhos · a partir de</p>{% endif %}
       {% if produto.oferta %}
         <p class="text-xs text-gray-500">de <s>R$ {{ produto.oferta.de|floatformat:"2" }}</s></p>
         <p class="text-[#0A5CA0] font-extrabold text-xl leading-tight">R$ {{ produto.oferta.por|floatformat:"2" }}</p>

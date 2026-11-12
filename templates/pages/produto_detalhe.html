@@ -2,6 +2,8 @@
 {% load ofertas %}
 {% block title %}{{ produto.nome }} — {{ clinica.nome }}{% endblock %}
 
+{% block extra_head %}<style>[x-cloak]{display:none!important}</style>{% endblock %}
+
 {% block content %}
 
 <!-- Breadcrumb -->
@@ -45,6 +47,48 @@
       <p class="text-gray-400 text-sm">Marca: <span class="text-gray-600 font-medium">{{ produto.marca }}</span></p>
       {% endif %}
 
+      {% with tamanhos=produto.tamanhos_ativos %}
+      <div class="space-y-6"{% if tamanhos %} x-data="{ sel: 0 }"{% endif %}>
+      {% if tamanhos %}
+      <!-- Escolha do tamanho -->
+      <div>
+        <p class="text-sm font-semibold text-gray-700 mb-2">Tamanho</p>
+        <div class="flex flex-wrap gap-3">
+          {% for t in tamanhos %}
+          <button type="button" @click="sel = {{ forloop.counter0 }}"
+                  :class="sel === {{ forloop.counter0 }} ? 'bg-[#1F2A3A] border-[#1F2A3A] text-white' : 'bg-white border-gray-200 text-gray-800 hover:border-primary'"
+                  class="min-w-[6.5rem] border-2 rounded-xl px-4 py-2.5 text-center transition-colors">
+            <span class="block font-bold">{{ t.nome }}</span>
+            {% with o=t|oferta_tamanho:campanha %}
+            <span class="block text-xs opacity-75">R$ {% if o %}{{ o.por|floatformat:"2" }}{% else %}{{ t.preco|floatformat:"2" }}{% endif %}</span>
+            {% endwith %}
+          </button>
+          {% endfor %}
+        </div>
+      </div>
+
+      {% for t in tamanhos %}
+      <div x-show="sel === {{ forloop.counter0 }}" {% if not forloop.first %}x-cloak{% endif %}>
+        {% with o=t|oferta_tamanho:campanha %}
+        {% if o %}
+        <div class="py-4 border-t border-b border-gray-100">
+          <p class="flex items-center gap-2 text-sm mb-1">
+            <span class="bg-[#05101C] text-[#F59A1B] text-xs font-extrabold px-2 py-0.5 rounded">{{ campanha.nome }} -{{ o.pct }}%</span>
+            <span class="text-gray-400">de <s>R$ {{ o.de|floatformat:"2" }}</s></span>
+          </p>
+          <p class="font-display text-4xl font-semibold text-primary">R$ {{ o.por|floatformat:"2" }} <span class="text-base font-sans font-medium text-gray-500">· {{ t.nome }}</span></p>
+          <p class="text-sm font-semibold text-[#0B6B4E] mt-1">Economize R$ {{ o.economia|floatformat:"2" }} · oferta válida até {{ campanha.fim|date:"d/m" }}</p>
+        </div>
+        {% else %}
+        <div class="py-4 border-t border-b border-gray-100">
+          <p class="text-sm text-gray-400 mb-1">Preço</p>
+          <p class="font-display text-4xl font-semibold text-primary">R$ {{ t.preco|floatformat:"2" }} <span class="text-base font-sans font-medium text-gray-500">· {{ t.nome }}</span></p>
+        </div>
+        {% endif %}
+        {% endwith %}
+      </div>
+      {% endfor %}
+      {% else %}
       {% with o=produto|oferta:campanha %}
       {% if o %}
       <div class="py-4 border-t border-b border-gray-100">
@@ -63,6 +107,8 @@
       {% endif %}
       {% endwith %}
 
+      {% endif %}
+
       {% if produto.descricao %}
       <div class="text-gray-600 text-sm leading-relaxed">
         {{ produto.descricao|linebreaks }}
@@ -71,6 +117,19 @@
 
       <!-- Ações -->
       <div class="space-y-3 pt-2">
+        {% if tamanhos %}
+        {% for t in tamanhos %}
+        <a x-show="sel === {{ forloop.counter0 }}" {% if not forloop.first %}x-cloak{% endif %}
+           href="{{ clinica.whatsapp_url }}?text={% filter urlencode %}{% autoescape off %}Olá! Quero pedir: {{ produto.nome }} — {{ t.nome }}{% endautoescape %}{% endfilter %}"
+           target="_blank" rel="noopener"
+           class="w-full flex items-center justify-center gap-2 bg-[#25D366] text-white py-3.5 rounded-2xl font-semibold hover:bg-green-600 transition-colors shadow-md">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 32 32" fill="white">
+            <path d="M16 2C8.268 2 2 8.268 2 16c0 2.477.651 4.8 1.787 6.814L2 30l7.388-1.762A13.93 13.93 0 0 0 16 30c7.732 0 14-6.268 14-14S23.732 2 16 2zm6.36 19.32c-.348-.174-2.06-1.016-2.38-1.132-.32-.116-.553-.174-.785.174-.232.348-.9 1.132-1.104 1.365-.204.232-.406.26-.754.086-.348-.174-1.47-.542-2.8-1.727-1.034-.922-1.732-2.062-1.936-2.41-.204-.348-.022-.536.153-.71.158-.156.348-.406.522-.61.174-.204.232-.348.348-.58.116-.232.058-.435-.029-.61-.087-.174-.785-1.893-1.075-2.593-.283-.68-.57-.588-.785-.599l-.668-.012c-.232 0-.61.087-.928.435-.319.348-1.218 1.19-1.218 2.903s1.247 3.368 1.421 3.6c.174.232 2.454 3.748 5.947 5.254.831.358 1.48.572 1.985.732.834.265 1.594.228 2.194.138.669-.1 2.06-.842 2.35-1.656.29-.814.29-1.511.204-1.656-.087-.145-.319-.232-.668-.406z"/>
+          </svg>
+          Pedir {{ t.nome }} pelo WhatsApp
+        </a>
+        {% endfor %}
+        {% else %}
         <a href="{{ clinica.whatsapp_url }}?text={% filter urlencode %}{% autoescape off %}Olá! Tenho interesse no produto: {{ produto.nome }}{% endautoescape %}{% endfilter %}"
            target="_blank"
            class="w-full flex items-center justify-center gap-2 bg-[#25D366] text-white py-3.5 rounded-2xl font-semibold hover:bg-green-600 transition-colors shadow-md">
@@ -79,12 +138,15 @@
           </svg>
           Consultar via WhatsApp
         </a>
+        {% endif %}
         <a href="{% url 'contato:contato' %}"
            class="w-full flex items-center justify-center gap-2 border border-gray-200 text-gray-600 py-3.5 rounded-2xl font-semibold hover:border-primary hover:text-primary transition-colors">
           <span class="material-icons-round">mail</span>
           Enviar mensagem
         </a>
       </div>
+      </div>
+      {% endwith %}
     </div>
   </div>
 </article>
