@@ -28,7 +28,7 @@
             <td class="px-5 py-3 font-medium text-gray-800">{{ exame.nome }}</td>
             <td class="px-5 py-3 text-gray-500">{{ exame.prazo_resultado|default:"—" }}</td>
             <td class="px-5 py-3 text-right font-semibold text-primary">
-              {% if exame.preco %}R$ {{ exame.preco }}{% else %}Consultar{% endif %}
+              {% if exame.preco %}R$ {{ exame.preco }}{% elif clinica.whatsapp_url %}<a href="{{ clinica.whatsapp_url }}?text={% filter urlencode %}{% autoescape off %}Olá! Gostaria de mais informações sobre o exame: {{ exame.nome }}{% endautoescape %}{% endfilter %}" target="_blank" rel="noopener" class="inline-flex items-center gap-1 hover:underline">Consultar <span class="material-icons-round text-base">chat</span></a>{% else %}Consultar{% endif %}
             </td>
           </tr>
           {% endif %}
