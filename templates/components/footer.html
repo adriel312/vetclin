@@ -6,7 +6,14 @@
       <p class="font-display text-2xl font-semibold mb-2">{{ clinica.nome }}</p>
       <p class="text-green-200 text-sm leading-relaxed">{{ clinica.slogan }}</p>
       <div class="flex gap-4 mt-4">
-        {% if clinica.instagram %}<a href="{{ clinica.instagram }}" target="_blank" class="hover:text-secondary transition-colors"><span class="material-icons-round">photo_camera</span></a>{% endif %}
+        {% if clinica.instagram %}
+        <a href="{{ clinica.instagram }}" target="_blank" rel="noopener" class="inline-flex items-center gap-2 font-semibold text-sm hover:text-secondary transition-colors">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="2.5" y="2.5" width="19" height="19" rx="5.5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1" fill="currentColor" stroke="none"/>
+          </svg>
+          Instagram
+        </a>
+        {% endif %}
         {% if clinica.facebook  %}<a href="{{ clinica.facebook }}"  target="_blank" class="hover:text-secondary transition-colors"><span class="material-icons-round">thumb_up</span></a>{% endif %}
         {% if clinica.youtube   %}<a href="{{ clinica.youtube }}"   target="_blank" class="hover:text-secondary transition-colors"><span class="material-icons-round">play_circle</span></a>{% endif %}
       </div>
@@ -37,7 +44,7 @@
       </ul>
     </div>
   </div>
-  <div class="border-t border-green-800 text-center py-4 text-xs text-green-400">
+  <div class="border-t border-white/10 text-center py-4 text-xs text-white">
     © {% now "Y" %} {{ clinica.nome }} — Todos os direitos reservados.
   </div>
 </footer>
