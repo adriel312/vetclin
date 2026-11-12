@@ -12,6 +12,9 @@ class ClinicaConfig(models.Model):
     slogan = models.CharField('Slogan', max_length=200, blank=True)
     sobre = models.TextField('Sobre a clínica')
     logo = models.ImageField('Logo', upload_to='clinica/', blank=True, null=True)
+    favicon = models.ImageField(
+        'Ícone da aba do navegador', upload_to='clinica/', blank=True, null=True,
+        help_text='Imagem quadrada e simples (ex.: 512×512, PNG). Se ficar vazio, o site usa a logo.')
     imagem_topo = models.ImageField(
         'Imagem do topo da página inicial', upload_to='clinica/', blank=True, null=True,
         help_text='Aparece no lugar da patinha, ao lado de "Cuidado especializado". '
