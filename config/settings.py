@@ -45,6 +45,7 @@ LOCAL_APPS = [
     'apps.exames',
     'apps.contato',
     'apps.planos',
+    'apps.agenda',
     'apps.painel',
 ]
 
@@ -176,6 +177,15 @@ UNFOLD = {
                     {'title': 'Produtos',   'icon': 'shopping_bag',    'link': '/admin/produtos/produto/'},
                     {'title': 'Categorias', 'icon': 'category',        'link': '/admin/produtos/categoria/'},
                     {'title': 'Black Friday / Campanhas', 'icon': 'local_offer', 'link': '/admin/produtos/campanha/'},
+                ],
+            },
+            {
+                'title': 'Agenda',
+                'items': [
+                    {'title': 'Agendamentos', 'icon': 'event',         'link': '/admin/agenda/agendamento/'},
+                    {'title': 'Atendimentos', 'icon': 'medical_services', 'link': '/admin/agenda/tipoatendimento/'},
+                    {'title': 'Horarios',     'icon': 'schedule',      'link': '/admin/agenda/horariofuncionamento/'},
+                    {'title': 'Dias bloqueados', 'icon': 'event_busy', 'link': '/admin/agenda/bloqueio/'},
                 ],
             },
             {
