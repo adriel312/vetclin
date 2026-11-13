@@ -1,0 +1,15 @@
+{% if erro %}
+  <p class="text-sm text-gray-500">{{ erro }}</p>
+{% elif horarios %}
+  <p class="text-sm font-semibold text-gray-700 mb-2">Horários livres</p>
+  <div class="grid grid-cols-4 sm:grid-cols-6 gap-2">
+    {% for h in horarios %}
+    <label class="relative cursor-pointer">
+      <input type="radio" name="hora" value="{{ h|time:'H:i' }}" class="peer sr-only" {% if hora_escolhida == h|time:'H:i' %}checked{% endif %}>
+      <span class="block text-center rounded-lg border-2 border-gray-200 py-2 font-semibold tabular-nums transition-colors peer-checked:border-[#F59A1B] peer-checked:bg-[#F59A1B] peer-checked:text-[#05101C] hover:border-[#F59A1B] peer-focus-visible:ring-2 peer-focus-visible:ring-[#F59A1B]">{{ h|time:"H:i" }}</span>
+    </label>
+    {% endfor %}
+  </div>
+{% else %}
+  <p class="text-sm text-gray-600 bg-[#FFF4D6] rounded-xl px-4 py-3">Não há horários livres nesse dia. Escolha outro dia{% if clinica.whatsapp_url %} ou <a class="font-semibold underline" target="_blank" rel="noopener" href="{{ clinica.whatsapp_url }}?text={{ 'Olá! Não achei horário no site, podem me ajudar a agendar?'|urlencode }}">chame no WhatsApp</a>{% endif %}.</p>
+{% endif %}
