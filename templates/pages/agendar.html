@@ -1,0 +1,230 @@
+{% extends "base/base.html" %}
+{% block title %}Agendar online — {{ clinica.nome }}{% endblock %}
+{% block extra_head %}<style>[x-cloak]{display:none!important}</style>{% endblock %}
+
+{% block content %}
+<section class="bg-[#0A5CA0] text-white">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 py-12 md:py-16">
+    <p class="text-[#8EF0D3] font-extrabold text-xs uppercase tracking-[.14em] mb-3">Agenda online</p>
+    <h1 class="font-display text-4xl md:text-5xl font-semibold leading-tight">Agende a consulta ou a vacina do seu pet</h1>
+    <p class="text-[#DCEBFA] text-lg mt-4">Escolha o dia e o horário, conte o que o pet está sentindo e pronto. A equipe confirma pelo WhatsApp.</p>
+  </div>
+</section>
+
+<div class="bg-[#F3F7FB]">
+<form method="post" class="max-w-3xl mx-auto px-4 sm:px-6 py-10 space-y-6" novalidate
+      x-data="{ alerta: {% if tem_alerta %}true{% else %}false{% endif %} }">
+  {% csrf_token %}
+  <input type="text" name="website" class="hidden" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+  {% if form.errors %}
+  <div class="bg-red-50 border border-red-200 text-red-800 rounded-2xl px-5 py-4 text-sm">
+    <p class="font-bold">Falta pouco! Confira os campos marcados abaixo.</p>
+    {% for e in form.non_field_errors %}<p class="mt-1">{{ e }}</p>{% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- 1. Atendimento -->
+  <fieldset class="min-w-0 bg-white rounded-2xl border border-gray-200 p-5 md:p-7">
+    <legend class="sr-only">Atendimento</legend>
+    <h2 class="flex items-center gap-3 font-display text-2xl font-semibold text-gray-900 mb-5">
+      <span class="w-8 h-8 rounded-full bg-[#0A5CA0] text-white font-sans text-sm font-bold flex items-center justify-center">1</span>
+      O que você precisa?
+    </h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      {% for t in tipos %}
+      <label class="relative cursor-pointer">
+        <input type="radio" name="tipo" value="{{ t.pk }}" class="peer sr-only js-agenda"
+               {% if valores.tipo|stringformat:"s" == t.pk|stringformat:"s" %}checked{% endif %}>
+        <span class="flex gap-3 h-full rounded-xl border-2 border-gray-200 p-4 transition-colors
+                     peer-checked:border-[#0A5CA0] peer-checked:bg-[#EEF5FC] hover:border-[#0A5CA0]/50 peer-focus-visible:ring-2 peer-focus-visible:ring-[#0A5CA0]">
+          <span class="material-icons-round text-[#0A5CA0] text-3xl w-8 shrink-0 overflow-hidden">{{ t.icone|default:"pets" }}</span>
+          <span>
+            <span class="block font-bold text-gray-900">{{ t.nome }}</span>
+            <span class="block text-sm text-gray-500">{{ t.descricao }}</span>
+          </span>
+        </span>
+      </label>
+      {% endfor %}
+      {% if clinica.whatsapp_url %}
+      <a href="{{ clinica.whatsapp_url }}?text={{ 'Olá! Gostaria de agendar uma cirurgia.'|urlencode }}" target="_blank" rel="noopener"
+         class="flex gap-3 rounded-xl border-2 border-dashed border-gray-300 p-4 hover:border-[#25D366] transition-colors sm:col-span-2">
+        <span class="material-icons-round text-gray-400 text-3xl">healing</span>
+        <span>
+          <span class="block font-bold text-gray-900">Cirurgia</span>
+          <span class="block text-sm text-gray-500">Agendada só pelo WhatsApp, para avaliarmos cada caso. <span class="text-[#16a34a] font-semibold">Chamar no WhatsApp →</span></span>
+        </span>
+      </a>
+      {% endif %}
+    </div>
+    {% for e in form.tipo.errors %}<p class="text-sm text-red-600 mt-3">{{ e }}</p>{% endfor %}
+  </fieldset>
+
+  <!-- 2. Dia e horário -->
+  <fieldset class="min-w-0 bg-white rounded-2xl border border-gray-200 p-5 md:p-7">
+    <legend class="sr-only">Dia e horário</legend>
+    <h2 class="flex items-center gap-3 font-display text-2xl font-semibold text-gray-900 mb-5">
+      <span class="w-8 h-8 rounded-full bg-[#0A5CA0] text-white font-sans text-sm font-bold flex items-center justify-center">2</span>
+      Escolha o dia e o horário
+    </h2>
+    <div class="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1">
+      {% for d in dias %}
+      <label class="relative cursor-pointer shrink-0">
+        <input type="radio" name="data" value="{{ d|date:'Y-m-d' }}" class="peer sr-only js-agenda"
+               {% if valores.data == d|date:'Y-m-d' %}checked{% endif %}>
+        <span class="block w-16 text-center rounded-xl border-2 border-gray-200 py-2 transition-colors
+                     peer-checked:border-[#0A5CA0] peer-checked:bg-[#0A5CA0] peer-checked:text-white hover:border-[#0A5CA0]/50 peer-focus-visible:ring-2 peer-focus-visible:ring-[#0A5CA0]">
+          <span class="block text-xs font-semibold uppercase">{{ d|date:"D" }}</span>
+          <span class="block font-display text-2xl font-semibold leading-tight">{{ d|date:"d" }}</span>
+          <span class="block text-[11px] opacity-75">{{ d|date:"M" }}</span>
+        </span>
+      </label>
+      {% empty %}
+      <p class="text-sm text-gray-500">Nenhum dia disponível no momento. Chame a gente no WhatsApp.</p>
+      {% endfor %}
+    </div>
+    {% for e in form.data.errors %}<p class="text-sm text-red-600 mt-2">{{ e }}</p>{% endfor %}
+
+    <div id="horarios" class="mt-5"
+         hx-get="{% url 'agenda:horarios' %}" hx-trigger="change from:.js-agenda"
+         hx-include="[name='tipo']:checked, [name='data']:checked">
+      {% if horarios is not None %}
+        {% include "partials/agenda_horarios.html" with hora_escolhida=valores.hora %}
+      {% else %}
+        <p class="text-sm text-gray-500">Escolha o atendimento e o dia para ver os horários livres.</p>
+      {% endif %}
+    </div>
+    {% for e in form.hora.errors %}<p class="text-sm text-red-600 mt-2">{{ e }}</p>{% endfor %}
+  </fieldset>
+
+  <!-- 3. Pet -->
+  <fieldset class="min-w-0 bg-white rounded-2xl border border-gray-200 p-5 md:p-7">
+    <legend class="sr-only">Sobre o pet</legend>
+    <h2 class="flex items-center gap-3 font-display text-2xl font-semibold text-gray-900 mb-5">
+      <span class="w-8 h-8 rounded-full bg-[#0A5CA0] text-white font-sans text-sm font-bold flex items-center justify-center">3</span>
+      Sobre o pet
+    </h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="sm:col-span-2">
+        <label for="pet_nome" class="block text-sm font-semibold text-gray-700 mb-1">Nome do pet *</label>
+        <input id="pet_nome" name="pet_nome" value="{{ valores.pet_nome|default:'' }}" maxlength="60" class="w-full rounded-xl border border-gray-300 px-4 py-2.5 focus:border-[#0A5CA0] focus:ring-[#0A5CA0]">
+        {% for e in form.pet_nome.errors %}<p class="text-sm text-red-600 mt-1">{{ e }}</p>{% endfor %}
+      </div>
+      <div class="sm:col-span-2">
+        <span class="block text-sm font-semibold text-gray-700 mb-1">Espécie *</span>
+        <div class="flex gap-2">
+          {% for valor, rotulo in especies %}
+          <label class="relative cursor-pointer">
+            <input type="radio" name="especie" value="{{ valor }}" class="peer sr-only" {% if valores.especie == valor %}checked{% endif %}>
+            <span class="block rounded-full border-2 border-gray-200 px-5 py-2 font-semibold transition-colors peer-checked:border-[#0A5CA0] peer-checked:bg-[#0A5CA0] peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-[#0A5CA0]">{{ rotulo }}</span>
+          </label>
+          {% endfor %}
+        </div>
+        {% for e in form.especie.errors %}<p class="text-sm text-red-600 mt-1">{{ e }}</p>{% endfor %}
+      </div>
+      <div>
+        <label for="raca" class="block text-sm font-semibold text-gray-700 mb-1">Raça</label>
+        <input id="raca" name="raca" value="{{ valores.raca|default:'' }}" maxlength="60" placeholder="Ex.: SRD, Shih-tzu" class="w-full rounded-xl border border-gray-300 px-4 py-2.5">
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label for="idade" class="block text-sm font-semibold text-gray-700 mb-1">Idade</label>
+          <input id="idade" name="idade" value="{{ valores.idade|default:'' }}" maxlength="30" placeholder="Ex.: 3 anos" class="w-full rounded-xl border border-gray-300 px-4 py-2.5">
+        </div>
+        <div>
+          <label for="peso" class="block text-sm font-semibold text-gray-700 mb-1">Peso aprox.</label>
+          <input id="peso" name="peso" value="{{ valores.peso|default:'' }}" maxlength="20" placeholder="Ex.: 8 kg" class="w-full rounded-xl border border-gray-300 px-4 py-2.5">
+        </div>
+      </div>
+      <label class="sm:col-span-2 flex items-center gap-2 text-sm text-gray-700">
+        <input type="checkbox" name="primeira_vez" {% if valores.primeira_vez %}checked{% endif %} class="rounded border-gray-300 text-[#0A5CA0]">
+        É a primeira vez do pet na clínica
+      </label>
+    </div>
+  </fieldset>
+
+  <!-- 4. Sintomas -->
+  <fieldset class="min-w-0 bg-white rounded-2xl border border-gray-200 p-5 md:p-7">
+    <legend class="sr-only">Sintomas</legend>
+    <h2 class="flex items-center gap-3 font-display text-2xl font-semibold text-gray-900 mb-1">
+      <span class="w-8 h-8 rounded-full bg-[#0A5CA0] text-white font-sans text-sm font-bold flex items-center justify-center">4</span>
+      O que está acontecendo?
+    </h2>
+    <p class="text-sm text-gray-500 mb-5 ml-11">Marque o que você notou. Isso ajuda o veterinário a se preparar.</p>
+    <div class="flex flex-wrap gap-2">
+      {% for valor, rotulo in sintomas %}
+      <label class="relative cursor-pointer">
+        <input type="checkbox" name="sintomas" value="{{ valor }}" class="peer sr-only" {% if valor in marcados %}checked{% endif %}>
+        <span class="block rounded-full border border-gray-300 px-3.5 py-1.5 text-sm transition-colors peer-checked:border-[#0A5CA0] peer-checked:bg-[#EEF5FC] peer-checked:text-[#0A5CA0] peer-checked:font-semibold peer-focus-visible:ring-2 peer-focus-visible:ring-[#0A5CA0]">{{ rotulo }}</span>
+      </label>
+      {% endfor %}
+    </div>
+
+    <p class="text-xs font-extrabold uppercase tracking-[.12em] text-red-700 mt-6 mb-2">Sinais de alerta</p>
+    <div class="flex flex-wrap gap-2">
+      {% for valor, rotulo in sinais_alerta %}
+      <label class="relative cursor-pointer">
+        <input type="checkbox" name="sintomas" value="{{ valor }}" class="peer sr-only" data-alerta
+               @change="alerta = $root.querySelectorAll('[data-alerta]:checked').length > 0" {% if valor in marcados %}checked{% endif %}>
+        <span class="block rounded-full border border-red-200 px-3.5 py-1.5 text-sm text-red-800 transition-colors peer-checked:border-red-600 peer-checked:bg-red-600 peer-checked:text-white peer-checked:font-semibold peer-focus-visible:ring-2 peer-focus-visible:ring-red-600">{{ rotulo }}</span>
+      </label>
+      {% endfor %}
+    </div>
+
+    <div x-show="alerta" x-cloak x-transition class="mt-5 rounded-2xl bg-red-600 text-white p-5">
+      <p class="font-bold text-lg flex items-center gap-2"><span class="material-icons-round">warning</span> Isso pode ser uma emergência</p>
+      <p class="text-sm mt-1 text-red-50">Não espere pelo agendamento. Fale com a clínica agora mesmo.</p>
+      <div class="flex flex-wrap gap-3 mt-4">
+        {% if clinica.whatsapp_url %}
+        <a href="{{ clinica.whatsapp_url }}?text={{ 'Olá! É uma emergência com o meu pet.'|urlencode }}" target="_blank" rel="noopener" class="bg-white text-red-700 font-bold px-5 py-2.5 rounded-full">Chamar no WhatsApp</a>
+        {% endif %}
+        {% if clinica.telefone %}<span class="font-bold px-1 py-2.5">ou ligue: {{ clinica.telefone }}</span>{% endif %}
+      </div>
+    </div>
+
+    <label for="descricao" class="block text-sm font-semibold text-gray-700 mt-6 mb-1">Conte com suas palavras</label>
+    <textarea id="descricao" name="descricao" rows="4" maxlength="1500" placeholder="Ex.: Desde ontem está vomitando depois de comer e mais quieto que o normal."
+              class="w-full rounded-xl border border-gray-300 px-4 py-2.5">{{ valores.descricao|default:'' }}</textarea>
+    {% for e in form.descricao.errors %}<p class="text-sm text-red-600 mt-1">{{ e }}</p>{% endfor %}
+  </fieldset>
+
+  <!-- 5. Tutor -->
+  <fieldset class="min-w-0 bg-white rounded-2xl border border-gray-200 p-5 md:p-7">
+    <legend class="sr-only">Seus dados</legend>
+    <h2 class="flex items-center gap-3 font-display text-2xl font-semibold text-gray-900 mb-5">
+      <span class="w-8 h-8 rounded-full bg-[#0A5CA0] text-white font-sans text-sm font-bold flex items-center justify-center">5</span>
+      Seus dados
+    </h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="sm:col-span-2">
+        <label for="tutor_nome" class="block text-sm font-semibold text-gray-700 mb-1">Seu nome *</label>
+        <input id="tutor_nome" name="tutor_nome" value="{{ valores.tutor_nome|default:'' }}" maxlength="100" autocomplete="name" class="w-full rounded-xl border border-gray-300 px-4 py-2.5">
+        {% for e in form.tutor_nome.errors %}<p class="text-sm text-red-600 mt-1">{{ e }}</p>{% endfor %}
+      </div>
+      <div>
+        <label for="tutor_whatsapp" class="block text-sm font-semibold text-gray-700 mb-1">WhatsApp com DDD *</label>
+        <input id="tutor_whatsapp" name="tutor_whatsapp" value="{{ valores.tutor_whatsapp|default:'' }}" maxlength="20" inputmode="tel" autocomplete="tel" placeholder="(63) 99999-9999" class="w-full rounded-xl border border-gray-300 px-4 py-2.5">
+        {% for e in form.tutor_whatsapp.errors %}<p class="text-sm text-red-600 mt-1">{{ e }}</p>{% endfor %}
+      </div>
+      <div>
+        <label for="tutor_email" class="block text-sm font-semibold text-gray-700 mb-1">E-mail <span class="font-normal text-gray-400">(opcional)</span></label>
+        <input id="tutor_email" name="tutor_email" type="email" value="{{ valores.tutor_email|default:'' }}" autocomplete="email" class="w-full rounded-xl border border-gray-300 px-4 py-2.5">
+        {% for e in form.tutor_email.errors %}<p class="text-sm text-red-600 mt-1">{{ e }}</p>{% endfor %}
+      </div>
+    </div>
+    <label class="flex items-start gap-2 text-sm text-gray-600 mt-5">
+      <input type="checkbox" name="consentimento" {% if valores.consentimento %}checked{% endif %} class="mt-0.5 rounded border-gray-300 text-[#0A5CA0]">
+      <span>Autorizo a {{ clinica.nome|default:"clínica" }} a usar estes dados para entrar em contato sobre este atendimento, conforme a LGPD.</span>
+    </label>
+    {% for e in form.consentimento.errors %}<p class="text-sm text-red-600 mt-1">{{ e }}</p>{% endfor %}
+  </fieldset>
+
+  <div class="text-center pt-2">
+    <button type="submit" class="w-full sm:w-auto bg-[#F59A1B] text-[#05101C] font-bold text-lg px-10 py-4 rounded-full hover:brightness-105 transition shadow-lg">
+      Pedir agendamento
+    </button>
+    <p class="text-sm text-gray-500 mt-3">Você recebe a confirmação do horário pelo WhatsApp.</p>
+  </div>
+</form>
+</div>
+{% endblock %}

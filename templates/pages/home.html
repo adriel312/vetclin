@@ -13,7 +13,7 @@
       </h1>
       <p class="text-green-100 text-lg mb-8 max-w-md">{{ clinica.slogan }}</p>
       <div class="flex flex-wrap gap-4">
-        <a href="{{ clinica.whatsapp_url }}?text={{ 'Olá! Gostaria de agendar uma consulta.'|urlencode }}" target="_blank"
+        <a href="{% url 'agenda:agendar' %}"
            class="bg-secondary text-white px-8 py-3 rounded-full font-semibold hover:bg-secondary-dark transition-colors shadow-lg">
           Agendar consulta
         </a>

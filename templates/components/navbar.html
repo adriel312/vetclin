@@ -32,9 +32,10 @@
         <a href="{% url 'planos:lista' %}" class="hover:text-primary transition-colors inline-flex items-center gap-1.5">Plano de Saúde <span class="bg-[#E6F6F0] text-[#0B6B4E] text-[10px] font-extrabold tracking-wider px-1.5 py-0.5 rounded-full">NOVO</span></a>
         <a href="{% url 'produtos:lista' %}" class="hover:text-primary transition-colors">Loja</a>
         <a href="{% url 'core:sobre' %}" class="hover:text-primary transition-colors">Sobre</a>
-        <a href="{% url 'contato:contato' %}"
+        <a href="{% url 'contato:contato' %}" class="hover:text-primary transition-colors">Contato</a>
+        <a href="{% url 'agenda:agendar' %}"
            class="bg-primary text-white px-5 py-2 rounded-full hover:bg-primary-dark transition-colors">
-          Contato
+          Agendar consulta
         </a>
       </div>
 
@@ -53,6 +54,7 @@
       <a href="{% url 'produtos:lista' %}" class="py-2 hover:text-primary">Loja</a>
       <a href="{% url 'core:sobre' %}" class="py-2 hover:text-primary">Sobre</a>
       <a href="{% url 'contato:contato' %}" class="py-2 hover:text-primary">Contato</a>
+      <a href="{% url 'agenda:agendar' %}" class="mt-1 text-center bg-primary text-white py-2.5 rounded-full font-semibold">Agendar consulta</a>
     </div>
   </div>
 </nav>

@@ -1,0 +1,49 @@
+{% extends "base/base.html" %}
+{% block title %}Pedido de agendamento enviado — {{ clinica.nome }}{% endblock %}
+
+{% block content %}
+<div class="bg-[#F3F7FB]">
+<div class="max-w-2xl mx-auto px-4 sm:px-6 py-12 md:py-16">
+  <div class="text-center">
+    <span class="inline-flex w-16 h-16 rounded-full bg-[#E6F6F0] text-[#0B6B4E] items-center justify-center"><span class="material-icons-round text-4xl">check</span></span>
+    <h1 class="font-display text-3xl md:text-4xl font-semibold text-gray-900 mt-4">Pedido enviado!</h1>
+    <p class="text-gray-600 mt-2">A equipe vai confirmar o horário pelo WhatsApp <strong class="text-gray-900">{{ ag.tutor_whatsapp }}</strong>. Se o horário não puder ser atendido, combinamos outro.</p>
+  </div>
+
+  {% if ag.sinal_de_alerta %}
+  <div class="mt-8 rounded-2xl bg-red-600 text-white p-5">
+    <p class="font-bold flex items-center gap-2"><span class="material-icons-round">warning</span> Você marcou um sinal de alerta</p>
+    <p class="text-sm mt-1 text-red-50">Se o pet piorar ou estiver em sofrimento, não espere: fale com a clínica agora.</p>
+    {% if clinica.whatsapp_url %}<a href="{{ clinica.whatsapp_url }}?text={{ 'Olá! É uma emergência com o meu pet.'|urlencode }}" target="_blank" rel="noopener" class="inline-block mt-3 bg-white text-red-700 font-bold px-5 py-2 rounded-full">Chamar no WhatsApp</a>{% endif %}
+  </div>
+  {% endif %}
+
+  <div class="mt-8 bg-white rounded-2xl border border-gray-200 divide-y divide-gray-100">
+    <div class="flex justify-between gap-4 px-5 py-4"><span class="text-gray-500">Atendimento</span><span class="font-semibold text-gray-900">{{ ag.tipo }}</span></div>
+    <div class="flex justify-between gap-4 px-5 py-4"><span class="text-gray-500">Data e horário</span><span class="font-semibold text-gray-900">{{ ag.data|date:"l, d/m" }} às {{ ag.hora|time:"H:i" }}</span></div>
+    <div class="flex justify-between gap-4 px-5 py-4"><span class="text-gray-500">Pet</span><span class="font-semibold text-gray-900">{{ ag.pet_nome }} ({{ ag.get_especie_display }})</span></div>
+    <div class="flex justify-between gap-4 px-5 py-4"><span class="text-gray-500">Situação</span><span class="font-semibold text-[#B36008]">{{ ag.get_status_display }}</span></div>
+  </div>
+
+  <div class="mt-8 bg-white rounded-2xl border border-gray-200 p-5 md:p-7">
+    <h2 class="font-display text-2xl font-semibold text-gray-900 mb-4">O que levar no dia</h2>
+    <ul class="space-y-3">
+      {% for o in orientacoes %}
+      <li class="flex gap-3"><span class="material-icons-round text-[#0B6B4E]">check_circle</span><span class="text-gray-700 pt-0.5">{{ o }}</span></li>
+      {% endfor %}
+    </ul>
+    {% if clinica.endereco %}
+    <p class="text-sm text-gray-500 mt-6 flex gap-2"><span class="material-icons-round text-base">location_on</span>{{ clinica.endereco }}, {{ clinica.bairro }} — {{ clinica.cidade }}/{{ clinica.estado }}</p>
+    {% endif %}
+  </div>
+
+  <div class="flex flex-wrap justify-center gap-3 mt-8">
+    {% if clinica.whatsapp_url %}
+    <a href="{{ clinica.whatsapp_url }}?text={% filter urlencode %}{% autoescape off %}Olá! Fiz um pedido de agendamento pelo site para {{ ag.pet_nome }} em {{ ag.data|date:'d/m' }} às {{ ag.hora|time:'H:i' }}.{% endautoescape %}{% endfilter %}"
+       target="_blank" rel="noopener" class="bg-[#25D366] text-white font-bold px-6 py-3 rounded-full">Falar com a clínica</a>
+    {% endif %}
+    <a href="{% url 'core:home' %}" class="border border-gray-300 text-gray-700 font-bold px-6 py-3 rounded-full hover:border-[#0A5CA0]">Voltar ao início</a>
+  </div>
+</div>
+</div>
+{% endblock %}
