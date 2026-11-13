@@ -11,6 +11,7 @@ urlpatterns = [
     path('exames/', include('apps.exames.urls')),
     path('contato/', include('apps.contato.urls')),
     path('plano-de-saude/', include('apps.planos.urls')),
+    path('agendar/', include('apps.agenda.urls')),
 ]
 
 # Em produção, /static/ e /media/ são servidos diretamente pelo Nginx.
