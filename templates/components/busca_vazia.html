@@ -1,0 +1,10 @@
+{# Mensagem quando a busca não encontra nada. #}
+<div class="col-span-full text-center bg-white rounded-2xl border border-gray-200 px-6 py-12">
+  <span class="material-icons-round text-5xl text-gray-300">search_off</span>
+  <p class="font-semibold text-gray-900 mt-2">Não encontramos “{{ busca }}”</p>
+  <p class="text-sm text-gray-500 mt-1">Confira a escrita ou tente uma palavra mais curta, como a marca do produto.</p>
+  {% if clinica.whatsapp_url %}
+  <a href="{{ clinica.whatsapp_url }}?text={% filter urlencode %}{% autoescape off %}Olá! Vocês têm {{ busca }}?{% endautoescape %}{% endfilter %}" target="_blank" rel="noopener"
+     class="inline-block mt-5 bg-[#25D366] text-white font-semibold px-5 py-2.5 rounded-full">Perguntar no WhatsApp</a>
+  {% endif %}
+</div>

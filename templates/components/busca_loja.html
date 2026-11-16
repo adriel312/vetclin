@@ -1,0 +1,19 @@
+{# Barra de pesquisa da loja. Usa "busca" e "categoria_ativa" do contexto. #}
+<form method="get" action="{% url 'produtos:lista' %}" role="search" class="max-w-xl mx-auto mb-6">
+  <label for="busca-loja" class="sr-only">Pesquisar produtos</label>
+  <div class="flex items-center gap-2 bg-white border-2 border-gray-200 rounded-full pl-4 pr-1.5 py-1.5 focus-within:border-[#0A5CA0] transition-colors">
+    <span class="material-icons-round text-gray-400 w-6 shrink-0 overflow-hidden">search</span>
+    <input id="busca-loja" type="search" name="q" value="{{ busca }}" maxlength="80" autocomplete="off"
+           placeholder="Pesquisar produtos, ex.: ração golden, nexgard"
+           class="flex-1 min-w-0 border-0 bg-transparent focus:ring-0 focus:outline-none text-gray-900 placeholder-gray-400 py-1.5">
+    <button type="submit" class="shrink-0 bg-[#0A5CA0] text-white font-semibold text-sm px-5 py-2 rounded-full hover:bg-[#014880] transition-colors">Buscar</button>
+  </div>
+</form>
+{% if busca %}
+<div class="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-sm mb-6">
+  <span class="text-gray-600">{{ total }} resultado{{ total|pluralize }} para <strong class="text-gray-900">“{{ busca }}”</strong></span>
+  <a href="{% url 'produtos:lista' %}{% if categoria_ativa %}?categoria={{ categoria_ativa }}{% endif %}" class="inline-flex items-center gap-1 font-semibold text-[#0A5CA0] hover:underline">
+    <span class="material-icons-round text-base">close</span>Limpar busca
+  </a>
+</div>
+{% endif %}
