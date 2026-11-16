@@ -28,13 +28,15 @@
 <div class="bg-[#F3F7FB]">
 <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-12">
 
+  {% include "components/busca_loja.html" %}
+
   <!-- Categorias -->
   <div class="flex flex-wrap gap-2.5 justify-center mb-8">
-    <a href="{% url 'produtos:lista' %}"
+    <a href="{% url 'produtos:lista' %}{% if busca %}?q={{ busca|urlencode }}{% endif %}"
        class="px-4 py-2 rounded-full text-sm font-semibold border transition-colors
               {% if not categoria_ativa %}bg-[#0A5CA0] border-[#0A5CA0] text-white{% else %}bg-white border-gray-200 text-gray-700 hover:border-[#0A5CA0]{% endif %}">Todos</a>
     {% for cat in categorias %}
-    <a href="?categoria={{ cat.slug }}"
+    <a href="?categoria={{ cat.slug }}{% if busca %}&amp;q={{ busca|urlencode }}{% endif %}"
        class="px-4 py-2 rounded-full text-sm font-semibold border transition-colors
               {% if categoria_ativa == cat.slug %}bg-[#0A5CA0] border-[#0A5CA0] text-white{% else %}bg-white border-gray-200 text-gray-700 hover:border-[#0A5CA0]{% endif %}">{{ cat.nome }}</a>
     {% endfor %}
@@ -58,8 +60,10 @@
   <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
     {% for produto in em_oferta %}{% include "components/produto_card_oferta.html" %}{% endfor %}
   </div>
+  {% elif busca and not demais %}
+  {% include "components/busca_vazia.html" %}
   {% else %}
-  <p class="text-center text-gray-500 py-12 bg-white rounded-2xl border border-gray-200">Nenhuma oferta nesta categoria. Veja os outros produtos abaixo.</p>
+  <p class="text-center text-gray-500 py-12 bg-white rounded-2xl border border-gray-200">Nenhuma oferta {% if busca %}nesta busca{% else %}nesta categoria{% endif %}. Veja os outros produtos abaixo.</p>
   {% endif %}
 
   {% if demais %}
@@ -79,15 +83,17 @@
     <h1 class="font-display text-4xl font-semibold text-gray-800">Nossos Produtos</h1>
   </div>
 
+  {% include "components/busca_loja.html" %}
+
   <!-- Filtro por categoria (HTMX) -->
   <div class="flex flex-wrap gap-3 justify-center mb-10">
-    <a href="{% url 'produtos:lista' %}"
+    <a href="{% url 'produtos:lista' %}{% if busca %}?q={{ busca|urlencode }}{% endif %}"
        class="px-4 py-2 rounded-full text-sm font-medium transition-colors
               {% if not categoria_ativa %}bg-primary text-white{% else %}bg-gray-100 text-gray-600 hover:bg-gray-200{% endif %}">
       Todos
     </a>
     {% for cat in categorias %}
-    <a href="?categoria={{ cat.slug }}"
+    <a href="?categoria={{ cat.slug }}{% if busca %}&amp;q={{ busca|urlencode }}{% endif %}"
        class="px-4 py-2 rounded-full text-sm font-medium transition-colors
               {% if categoria_ativa == cat.slug %}bg-primary text-white{% else %}bg-gray-100 text-gray-600 hover:bg-gray-200{% endif %}">
       {{ cat.nome }}
@@ -121,7 +127,7 @@
       </div>
     </a>
     {% empty %}
-    <p class="col-span-4 text-center text-gray-400 py-16">Nenhum produto encontrado.</p>
+    {% if busca %}{% include "components/busca_vazia.html" %}{% else %}<p class="col-span-4 text-center text-gray-400 py-16">Nenhum produto encontrado.</p>{% endif %}
     {% endfor %}
   </div>
 </div>
