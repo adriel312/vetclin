@@ -1,3 +1,5 @@
+import unicodedata
+
 from django.shortcuts import render, get_object_or_404
 from .models import Campanha, Categoria, Produto
 
@@ -8,6 +10,9 @@ def lista(request):
     produtos = Produto.objects.filter(ativo=True).select_related('categoria').prefetch_related('tamanhos')
     if categoria_slug:
         produtos = produtos.filter(categoria__slug=categoria_slug)
+    busca = request.GET.get('q', '').strip()[:80]
+    if busca:
+        produtos = [p for p in produtos if _combina(p, busca)]
 
     campanha = Campanha.atual()
     em_oferta, demais = [], []
@@ -22,6 +27,8 @@ def lista(request):
         'demais': demais,
         'categorias': categorias,
         'categoria_ativa': categoria_slug,
+        'busca': busca,
+        'total': len(produtos),
     }
     try:
         from apps.planos.models import Plano
@@ -30,6 +37,22 @@ def lista(request):
     except Exception:
         pass
     return render(request, 'pages/produtos.html', context)
+
+
+def _normalizar(texto):
+    """Minúsculas e sem acento: "Ração" → "racao"."""
+    texto = unicodedata.normalize('NFKD', texto or '')
+    return ''.join(c for c in texto if not unicodedata.combining(c)).lower()
+
+
+def _combina(produto, busca):
+    """Todas as palavras buscadas precisam aparecer no nome, marca, categoria, descrição ou tamanhos."""
+    alvo = _normalizar(' '.join([
+        produto.nome, produto.marca, produto.descricao,
+        produto.categoria.nome if produto.categoria else '',
+        ' '.join(t.nome for t in produto.tamanhos.all()),
+    ]))
+    return all(palavra in alvo for palavra in _normalizar(busca).split())
 
 
 def detalhe(request, slug):
